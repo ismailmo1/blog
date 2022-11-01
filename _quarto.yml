@@ -14,3 +14,5 @@ format:
   html:
     theme: solar
     css: styles.css
+execute:
+  freeze: auto
