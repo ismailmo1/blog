@@ -2,7 +2,6 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/welcome/index.html",
       "/posts/pytest-sql/index.html"
     ]
   }

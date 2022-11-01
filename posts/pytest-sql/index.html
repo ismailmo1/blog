@@ -200,11 +200,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <p>Mixing SQL queries into your python code may not be the ideal approach in every scenario, however sometimes an ORM just doesn’t meet your complex querying needs and a SQL query is much simpler.</p>
-<p>Regardless of the merits of using ORMs or not, this post assumes you are already in the situation where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. ___</p>
-<p>Let’s begin by setting the scene and motivating the examples in this post.</p>
+<p>Regardless of the merits of using ORMs or not, this post assumes you are already in the situation where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. <br></p>
+<section id="setting-the-scene" class="level1">
+<h1>Setting the scene</h1>
+<p>Let’s begin by motivating the examples in this post.</p>
 <p>We’re currently working on a flask app and we’ve been asked to integrate a new data source to an existing view in the app. We take a look at the endpoint that renders the template for the view and this is what we’re greeted with:</p>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Dummy flask app setup code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> g</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -224,29 +228,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_connection(exception):</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> <span class="bu">getattr</span>(g, <span class="st">'_database'</span>, <span class="va">None</span>)</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> db <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        db.close()</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">'/'</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> home():</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"SELECT * FROM table1"</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    cur <span class="op">=</span> get_db().execute(query)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> cur.fetchall()</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>app.run()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> * Serving Flask app '__main__'
- * Debug mode: off</code></pre>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        db.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [01/Nov/2022 21:19:59] "GET / HTTP/1.1" 200 -</code></pre>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">'/'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> home():</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">filter</span> <span class="op">=</span> request.args.get(<span class="st">'filter'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"SELECT some_column FROM some_table WHERE some_column = ?"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    cur <span class="op">=</span> get_db().execute(query, [<span class="bu">filter</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> cur.fetchall()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
+<p>A user sends a request to <code>/?filter=columnvalue</code> and on the server side we send the following query to our DB:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> some_column <span class="kw">FROM</span> some_table <span class="kw">WHERE</span> some_column <span class="op">=</span> <span class="st">'columnvalue'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We’ve been asked to add <code>another_table</code> to the query and so I decide something like this works pretty well for what we need:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> some_column <span class="kw">FROM</span> some_table <span class="kw">union</span> another_table <span class="kw">WHERE</span> some_column <span class="op">=</span> <span class="st">'columnvalue'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(lets assume <code>another_table</code> has the same schema as <code>some_table</code> here)</p>
+<p>This is pretty simple, and going through the effort of adding a test for this doesn’t just doesn’t seem worth the effort, I’m feeling pretty confident that my new query will work fine after testing it manually in my local dev environment.</p>
+<p>Fair enough.</p>
+<p>But here’s a query that I’d want to be more careful with:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- taken from https://learnsql.com/blog/cte-with-examples/</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> avg_position <span class="kw">AS</span> (</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> position, <span class="fu">AVG</span>(bonus) <span class="kw">AS</span> average_bonus_for_position</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> bonus_jan</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> position),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    avg_region <span class="kw">AS</span> (</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> region, <span class="fu">AVG</span> (bonus) <span class="kw">AS</span> average_bonus_for_region</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> bonus_jan</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> region)   </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> b.employee_id, b.first_name, b.last_name, b.position, b.region, b.bonus, ap.average_bonus_for_position, ar.average_bonus_for_region</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> bonus_jan b</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> avg_position ap</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> b.position <span class="op">=</span> ap.position</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> avg_region ar</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> b.region <span class="op">=</span> ar.region;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When the query is an amalgamation of dozens of business rules and domain specific quirks of the data - it can end up looking quite unwieldy and I’ve find that testing is a huge help in understanding the expected behaviour, reducing iteration time in development and increasing confidence in my changes.</p>
+<p>The goal of this post is to demonstrate an example of a more realistic query that you might encounter in production, we’ll first go through the manual process of how we could test this query and ensure it returns the data we expect, and then we’ll automate the testing steps with pytest and incorporate into the rest of our test suite, finally we’ll make some changes to query to demonstrate how adding test helps with development and maintenance.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

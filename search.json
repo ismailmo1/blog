@@ -1,24 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "My Blog",
-    "section": "",
-    "text": "0 min\n\n\n\nnews\n\n\n\n\nOct 29, 2022\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n0 min\n\n\n\nsql\n\n\npython\n\n\npytest\n\n\n\n\nJan 11, 2022\n\n\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome To My Blog",
-    "section": "",
-    "text": "Since this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
-  },
-  {
     "objectID": "posts/pytest-sql/index.html",
     "href": "posts/pytest-sql/index.html",
     "title": "SQL and Pytest",
     "section": "",
-    "text": "Regardless of the merits of using ORMs or not, this post assumes you are already in the situation where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. ___\nLet’s begin by setting the scene and motivating the examples in this post.\nWe’re currently working on a flask app and we’ve been asked to integrate a new data source to an existing view in the app. We take a look at the endpoint that renders the template for the view and this is what we’re greeted with:\n\nfrom flask import Flask\nimport sqlite3\nfrom flask import g\n\nDATABASE = 'database.db'\n\n# for a real app we'd use the factory pattern\napp = Flask(__name__)\n\n# quickstart from https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/\ndef get_db()-> sqlite3.Connection:\n    db = getattr(g, '_database', None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n    return db\n\n@app.teardown_appcontext\ndef close_connection(exception):\n    db = getattr(g, '_database', None)\n    if db is not None:\n        db.close()\n\n@app.get('/')\ndef home():\n    query = \"SELECT * FROM table1\"\n    cur = get_db().execute(query)\n    res = cur.fetchall()\n    return res\n\napp.run()\n\n * Serving Flask app '__main__'\n * Debug mode: off\n\n\nWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\n * Running on http://127.0.0.1:5000\nPress CTRL+C to quit\n127.0.0.1 - - [01/Nov/2022 21:19:59] \"GET / HTTP/1.1\" 200 -"
+    "text": "Regardless of the merits of using ORMs or not, this post assumes you are already in the situation where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. \n\nSetting the scene\nLet’s begin by motivating the examples in this post.\nWe’re currently working on a flask app and we’ve been asked to integrate a new data source to an existing view in the app. We take a look at the endpoint that renders the template for the view and this is what we’re greeted with:\n\n\nDummy flask app setup code\nfrom flask import Flask, request\nimport sqlite3\nfrom flask import g\n\nDATABASE = 'database.db'\n\n# for a real app we'd use the factory pattern\napp = Flask(__name__)\n\n# quickstart from https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/\ndef get_db()-> sqlite3.Connection:\n    db = getattr(g, '_database', None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n    return db\n\n@app.teardown_appcontext\ndef close_connection(exception):\n    db = getattr(g, '_database', None)\n    if db is not None:\n        db.close()\n\n\n\n@app.get('/')\ndef home():\n    filter = request.args.get('filter')\n    query = \"SELECT some_column FROM some_table WHERE some_column = ?\"\n    cur = get_db().execute(query, [filter])\n    res = cur.fetchall()\n    return res\n\nA user sends a request to /?filter=columnvalue and on the server side we send the following query to our DB:\nSELECT some_column FROM some_table WHERE some_column = 'columnvalue'\nWe’ve been asked to add another_table to the query and so I decide something like this works pretty well for what we need:\nSELECT some_column FROM some_table union another_table WHERE some_column = 'columnvalue'\n(lets assume another_table has the same schema as some_table here)\nThis is pretty simple, and going through the effort of adding a test for this doesn’t just doesn’t seem worth the effort, I’m feeling pretty confident that my new query will work fine after testing it manually in my local dev environment.\nFair enough.\nBut here’s a query that I’d want to be more careful with:\n-- taken from https://learnsql.com/blog/cte-with-examples/\nWITH avg_position AS (\n    SELECT position, AVG(bonus) AS average_bonus_for_position\n    FROM bonus_jan\n    GROUP BY position),\n    avg_region AS (\n    SELECT region, AVG (bonus) AS average_bonus_for_region\n    FROM bonus_jan\n    GROUP BY region)   \nSELECT b.employee_id, b.first_name, b.last_name, b.position, b.region, b.bonus, ap.average_bonus_for_position, ar.average_bonus_for_region\nFROM bonus_jan b\nJOIN avg_position ap\nON b.position = ap.position\nJOIN avg_region ar\nON b.region = ar.region;\nWhen the query is an amalgamation of dozens of business rules and domain specific quirks of the data - it can end up looking quite unwieldy and I’ve find that testing is a huge help in understanding the expected behaviour, reducing iteration time in development and increasing confidence in my changes.\nThe goal of this post is to demonstrate an example of a more realistic query that you might encounter in production, we’ll first go through the manual process of how we could test this query and ensure it returns the data we expect, and then we’ll automate the testing steps with pytest and incorporate into the rest of our test suite, finally we’ll make some changes to query to demonstrate how adding test helps with development and maintenance."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "My Blog",
+    "section": "",
+    "text": "2 min\n\n\n\nsql\n\n\npython\n\n\npytest\n\n\n\n\nJan 11, 2022\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
