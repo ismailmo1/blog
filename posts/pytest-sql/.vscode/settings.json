@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "pytest",
+      "database": "${workspaceFolder:pytest-sql}/database.db"
+    }
+  ]
+}

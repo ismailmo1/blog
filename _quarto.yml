@@ -1,0 +1,16 @@
+project:
+  type: website
+
+website:
+  title: "Ismail Mohammed"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/ismailmo1
+      - icon: linkedin
+        href: https://linkedin.com/in/ismailmo-chem
+format:
+  html:
+    theme: solar
+    css: styles.css
