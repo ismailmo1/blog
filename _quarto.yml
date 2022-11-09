@@ -3,6 +3,20 @@ project:
 
 website:
   title: "Ismail Mohammed"
+  repo-url: https://github.com/quarto-dev/quarto-demo
+  repo-actions: [edit, issue]
+  page-footer:
+    right:
+      - icon: github
+        href: https://github.com/ismailmo1
+      - icon: linkedin
+        href: https://linkedin.com/in/ismailmo-chem
+  body-footer: |
+    Any thoughts, comments or ideas? Please let me know [here](mailto:ismailmo4@gmail.com)!
+  # comments:
+  #   giscus:
+  #     repo: https://github.com/ismailmo1/blog/
+  open-graph: true
   navbar:
     right:
       - about.qmd
@@ -14,7 +28,9 @@ listing:
   image-height: "1"
 format:
   html:
-    theme: solar
+    theme:
+      light: flatly
+      dark: darkly
     css: styles.css
 execute:
   freeze: auto

@@ -1,5 +1,6 @@
 ---
 title: Pytest and SQL
+description: Automating the testing of your SQL queries
 date: 09-11-2022
 categories:
   - sql
@@ -15,9 +16,9 @@ format:
 jupyter: python3
 ---
 
-The code referenced in this post can be found [here](https://github.com/ismailmo1/pytest-sql)
+The source code for the demo referenced in this post can be found [here](https://github.com/ismailmo1/pytest-sql). You can jump to the actual [testing part here](#automated-testing) (skip all the intro stuff)
 
-Jump to the actual [testing part](#automated-testing) (skip all the intro stuff)
+![Testing flow to implement in pytest](./pytest_sql_flow.png)
 
 # SQL in Python
 Embedding SQL queries into your python code may not be the ideal approach in every scenario, however sometimes you're in a situation (by your own making or others') where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. 
