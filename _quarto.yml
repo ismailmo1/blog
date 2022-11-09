@@ -10,6 +10,8 @@ website:
         href: https://github.com/ismailmo1
       - icon: linkedin
         href: https://linkedin.com/in/ismailmo-chem
+listing:
+  image-height: "1"
 format:
   html:
     theme: solar
