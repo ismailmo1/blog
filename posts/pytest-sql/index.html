@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2022-01-11">
+<meta name="dcterms.date" content="2022-09-11">
 
-<title>Ismail Mohammed - SQL and Pytest</title>
+<title>Ismail Mohammed - Pytest and SQL</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -94,6 +94,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -122,12 +124,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: [{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: [],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -163,10 +195,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">SQL and Pytest</h1>
+      <h1 class="title">Pytest and SQL</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">sql</div>
                 <div class="quarto-category">python</div>
@@ -182,7 +214,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 11, 2022</p>
+        <p class="date">September 11, 2022</p>
       </div>
     </div>
       
@@ -191,85 +223,355 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sql-in-python" id="toc-sql-in-python" class="nav-link active" data-scroll-target="#sql-in-python"><span class="toc-section-number">1</span>  SQL in Python</a></li>
+  <li><a href="#the-end-goal" id="toc-the-end-goal" class="nav-link" data-scroll-target="#the-end-goal"><span class="toc-section-number">2</span>  The End Goal</a></li>
+  <li><a href="#setting-the-scene" id="toc-setting-the-scene" class="nav-link" data-scroll-target="#setting-the-scene"><span class="toc-section-number">3</span>  Setting the scene</a></li>
+  <li><a href="#testing-motivations" id="toc-testing-motivations" class="nav-link" data-scroll-target="#testing-motivations"><span class="toc-section-number">4</span>  Testing Motivations</a></li>
+  <li><a href="#automated-testing" id="toc-automated-testing" class="nav-link" data-scroll-target="#automated-testing"><span class="toc-section-number">5</span>  Automated testing</a>
+  <ul class="collapse">
+  <li><a href="#instantiate-the-test-database" id="toc-instantiate-the-test-database" class="nav-link" data-scroll-target="#instantiate-the-test-database"><span class="toc-section-number">5.1</span>  Instantiate the test database</a></li>
+  <li><a href="#setup-fixtures" id="toc-setup-fixtures" class="nav-link" data-scroll-target="#setup-fixtures"><span class="toc-section-number">5.2</span>  Setup fixtures</a></li>
+  <li><a href="#the-payoff" id="toc-the-payoff" class="nav-link" data-scroll-target="#the-payoff"><span class="toc-section-number">5.3</span>  The payoff</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
-<p>Mixing SQL queries into your python code may not be the ideal approach in every scenario, however sometimes an ORM just doesn’t meet your complex querying needs and a SQL query is much simpler.</p>
-<p>Regardless of the merits of using ORMs or not, this post assumes you are already in the situation where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions. <br></p>
-<section id="setting-the-scene" class="level1">
-<h1>Setting the scene</h1>
-<p>Let’s begin by motivating the examples in this post.</p>
-<p>We’re currently working on a flask app and we’ve been asked to integrate a new data source to an existing view in the app. We take a look at the endpoint that renders the template for the view and this is what we’re greeted with:</p>
+<p>The code referenced in this post can be found <a href="https://github.com/ismailmo1/pytest-sql">here</a></p>
+<p>Jump to the actual <a href="#automated-testing">testing part</a> (skip all the intro stuff)</p>
+<section id="sql-in-python" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> SQL in Python</h1>
+<p>Embedding SQL queries into your python code may not be the ideal approach in every scenario, however sometimes you’re in a situation (by your own making or others’) where you have a complex SQL query sitting in your python application somewhere, and you want to test it just like you test your other functions.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> get_some_data(session):</span>
+<span id="cb1-2"><a href="#cb1-2"></a>    super_critical_sql_query <span class="op">=</span> <span class="st">"SELECT col1, col2 FROM some_table"""</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    data_rows <span class="op">=</span> session.execute(super_critical_sql_query)   </span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="cf">return</span> data_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Thinking about how we would test this manually:</p>
+<ol type="1">
+<li>Connect to a dev/test instance of your db</li>
+<li>Copy/paste the sql query into a client (e.g.&nbsp;dbeaver)</li>
+<li>Inspect the rows returned to make sure they are what we expected.</li>
+</ol>
+<p>But what do we expect? Sure, there’s an expectation of the <em>shape</em> of the data we get back, i.e.&nbsp;the column names and maybe the number of rows are always the same, but the actual values within them can vary depending on what the current state of the database is - which ultimately can be affected by the time of day, period of the year, user behaviour i.e.&nbsp;the outside world (scary stuff). This isn’t too bad for adhoc manual data checks but this doesn’t work if we want to make testing simple and easy enough to integrate into an automated pipeline.</p>
+</section>
+<section id="the-end-goal" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The End Goal</h1>
+<p>Here’s what we want to achieve (and will!):</p>
+<ol type="1">
+<li>Spin up and connect to a clean db instance</li>
+<li>Insert some mock data necessary for our query to run</li>
+<li>Define the return data expected from running the query, given the mock data we have inserted</li>
+<li>Run our query that we want to test (i.e.&nbsp;<code>super_critical_sql_query</code> above)</li>
+<li>Assert that the results from <code>4.</code> match what we expected in <code>3.</code></li>
+<li>Clean up the database and shut it down after our tests are complete.</li>
+</ol>
+<p>The added advantage of <code>3.</code> is that we can now test edge cases without waiting for an opportunity to arise in the real world. So if there are rare data states in your database, you can test these out by inserting the “rare” data and running your query against it. We’ll see how we can use pytest fixtures to make this setup effortless for multiple tests below!</p>
+</section>
+<section id="setting-the-scene" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Setting the scene</h1>
+<p>The full source code (app &amp; tests) can be found <a href="https://github.com/ismailmo1/pytest-sql">here</a></p>
+<p>We’re currently working on a flask api with a single endpoint that returns the net calories for the day:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="at">@app.get</span>(<span class="st">"/"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">def</span> index():</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    start_date <span class="op">=</span> request.args.get(<span class="st">"start_date"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    end_date <span class="op">=</span> request.args.get(<span class="st">"end_date"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="cf">if</span> start_date <span class="kw">and</span> end_date:</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        calories <span class="op">=</span> get_total_net_calories(</span>
+<span id="cb2-7"><a href="#cb2-7"></a>            Session(engine),</span>
+<span id="cb2-8"><a href="#cb2-8"></a>            <span class="bu">tuple</span>(</span>
+<span id="cb2-9"><a href="#cb2-9"></a>                datetime.datetime.fromisoformat(d)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>                <span class="cf">for</span> d <span class="kw">in</span> [start_date, end_date]</span>
+<span id="cb2-11"><a href="#cb2-11"></a>            ),</span>
+<span id="cb2-12"><a href="#cb2-12"></a>        )</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-14"><a href="#cb2-14"></a>        calories <span class="op">=</span> get_total_net_calories(Session(engine))</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    <span class="cf">return</span> jsonify({<span class="st">"total_net_calories"</span>: calories})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>get_total_calories</code> connects to a database that stores logs from a food diary and exercise data from my treadmill:</p>
 <div class="cell" data-execution_count="3">
-<details>
-<summary>Dummy flask app setup code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> g</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>DATABASE <span class="op">=</span> <span class="st">'database.db'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># for a real app we'd use the factory pattern</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># quickstart from https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_db()<span class="op">-&gt;</span> sqlite3.Connection:</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> <span class="bu">getattr</span>(g, <span class="st">'_database'</span>, <span class="va">None</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> db <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        db <span class="op">=</span> g._database <span class="op">=</span> sqlite3.<span class="ex">connect</span>(DATABASE)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> db</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">@app.teardown_appcontext</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_connection(exception):</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> <span class="bu">getattr</span>(g, <span class="st">'_database'</span>, <span class="va">None</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> db <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        db.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">def</span> get_total_net_calories(</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    session: Session,</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    date_range: <span class="bu">tuple</span>[date, date] <span class="op">=</span> (</span>
+<span id="cb3-4"><a href="#cb3-4"></a>        date.today(),</span>
+<span id="cb3-5"><a href="#cb3-5"></a>        date.today() <span class="op">+</span> timedelta(days<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    ),</span>
+<span id="cb3-7"><a href="#cb3-7"></a>) <span class="op">-&gt;</span> <span class="bu">float</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb3-8"><a href="#cb3-8"></a>    start_date, end_date <span class="op">=</span> date_range</span>
+<span id="cb3-9"><a href="#cb3-9"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="st">        WITH consumption AS (</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="st">            SELECT</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="st">                sum(fr."kcal/unit" * fc.qty) AS total_cons</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="st">            FROM</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="st">                public.food_cons fc</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="st">                JOIN public.food_ref fr ON fc.food_id = fr.id</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="st">            WHERE</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="st">                date BETWEEN :start_date  :: timestamp</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="st">                AND :end_date :: timestamp</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="st">        ),</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="st">        bike_exp AS (</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="st">            SELECT</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a><span class="st">            --we burn 1kcal/minute</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="st">                sum(b.duration_min) AS total_bike_exp</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="st">            FROM</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="st">                bike b</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="st">            WHERE</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="st">                date BETWEEN :start_date :: timestamp</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="st">                AND :end_date :: timestamp</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="st">        )</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a><span class="st">        SELECT</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="st">            (consumption.total_cons - bike_exp.total_bike_exp) AS net_kcal</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a><span class="st">        FROM</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="st">            bike_exp,</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="st">            consumption</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a><span class="st">        """</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>    <span class="cf">with</span> session:</span>
+<span id="cb3-37"><a href="#cb3-37"></a>        result: <span class="bu">float</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> session.execute(  <span class="co"># type:ignore</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>            query,</span>
+<span id="cb3-39"><a href="#cb3-39"></a>            {</span>
+<span id="cb3-40"><a href="#cb3-40"></a>                <span class="st">"start_date"</span>: start_date.strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>),</span>
+<span id="cb3-41"><a href="#cb3-41"></a>                <span class="st">"end_date"</span>: end_date.strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>),</span>
+<span id="cb3-42"><a href="#cb3-42"></a>            },</span>
+<span id="cb3-43"><a href="#cb3-43"></a>        ).first()[<span class="dv">0</span>]</span>
+<span id="cb3-44"><a href="#cb3-44"></a>    <span class="cf">if</span> result:</span>
+<span id="cb3-45"><a href="#cb3-45"></a>        <span class="cf">return</span> <span class="bu">round</span>(result, <span class="dv">2</span>)</span>
+<span id="cb3-46"><a href="#cb3-46"></a></span>
+<span id="cb3-47"><a href="#cb3-47"></a>    <span class="cf">return</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">'/'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> home():</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">filter</span> <span class="op">=</span> request.args.get(<span class="st">'filter'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"SELECT some_column FROM some_table WHERE some_column = ?"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    cur <span class="op">=</span> get_db().execute(query, [<span class="bu">filter</span>])</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> cur.fetchall()</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>A user sends a request to <code>/?filter=columnvalue</code> and on the server side we send the following query to our DB:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> some_column <span class="kw">FROM</span> some_table <span class="kw">WHERE</span> some_column <span class="op">=</span> <span class="st">'columnvalue'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We’ve been asked to add <code>another_table</code> to the query and so I decide something like this works pretty well for what we need:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> some_column <span class="kw">FROM</span> some_table <span class="kw">union</span> another_table <span class="kw">WHERE</span> some_column <span class="op">=</span> <span class="st">'columnvalue'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(lets assume <code>another_table</code> has the same schema as <code>some_table</code> here)</p>
-<p>This is pretty simple, and going through the effort of adding a test for this doesn’t just doesn’t seem worth the effort, I’m feeling pretty confident that my new query will work fine after testing it manually in my local dev environment.</p>
-<p>Fair enough.</p>
-<p>But here’s a query that I’d want to be more careful with:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- taken from https://learnsql.com/blog/cte-with-examples/</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> avg_position <span class="kw">AS</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> position, <span class="fu">AVG</span>(bonus) <span class="kw">AS</span> average_bonus_for_position</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> bonus_jan</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> position),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    avg_region <span class="kw">AS</span> (</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> region, <span class="fu">AVG</span> (bonus) <span class="kw">AS</span> average_bonus_for_region</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> bonus_jan</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> region)   </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> b.employee_id, b.first_name, b.last_name, b.position, b.region, b.bonus, ap.average_bonus_for_position, ar.average_bonus_for_region</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> bonus_jan b</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> avg_position ap</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> b.position <span class="op">=</span> ap.position</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> avg_region ar</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> b.region <span class="op">=</span> ar.region;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>When the query is an amalgamation of dozens of business rules and domain specific quirks of the data - it can end up looking quite unwieldy and I’ve find that testing is a huge help in understanding the expected behaviour, reducing iteration time in development and increasing confidence in my changes.</p>
-<p>The goal of this post is to demonstrate an example of a more realistic query that you might encounter in production, we’ll first go through the manual process of how we could test this query and ensure it returns the data we expect, and then we’ll automate the testing steps with pytest and incorporate into the rest of our test suite, finally we’ll make some changes to query to demonstrate how adding test helps with development and maintenance.</p>
+</section>
+<section id="testing-motivations" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Testing Motivations</h1>
+<p>It’s likely that the your application code will need to be changed at some point. For the net calorie API in our example, we can think of a scenario where we add a new exercise to our training regime (we got bored of just using the bike and have ventured out into using the treadmill). To ensure our API endpoint still returns accurate data, the expenditure from this new exercise should be considered in the net calorie calculation. A simple change could be to adjust our query so it looks something like this:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">WITH</span> consumption <span class="kw">AS</span> (</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">SELECT</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>        <span class="fu">sum</span>(fr.<span class="ot">"kcal/unit"</span> <span class="op">*</span> fc.qty) <span class="kw">AS</span> total_cons</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="kw">FROM</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>        <span class="kw">public</span>.food_cons fc</span>
+<span id="cb4-6"><a href="#cb4-6"></a>        <span class="kw">JOIN</span> <span class="kw">public</span>.food_ref fr <span class="kw">ON</span> fc.food_id <span class="op">=</span> fr.<span class="kw">id</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="kw">WHERE</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>        <span class="dt">date</span> <span class="kw">BETWEEN</span> <span class="ch">:start_date</span>  :: <span class="dt">timestamp</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>        <span class="kw">AND</span> <span class="ch">:end_date</span> :: <span class="dt">timestamp</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>),</span>
+<span id="cb4-11"><a href="#cb4-11"></a>bike_exp <span class="kw">AS</span> (</span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="kw">SELECT</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    <span class="co">-- assume 1kcal/minute</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>        <span class="fu">sum</span>(b.duration_min) <span class="kw">AS</span> total_bike_exp</span>
+<span id="cb4-15"><a href="#cb4-15"></a>    <span class="kw">FROM</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>        bike b</span>
+<span id="cb4-17"><a href="#cb4-17"></a>    <span class="kw">WHERE</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>        <span class="dt">date</span> <span class="kw">BETWEEN</span> <span class="ch">:start_date</span> :: <span class="dt">timestamp</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>        <span class="kw">AND</span> <span class="ch">:end_date</span> :: <span class="dt">timestamp</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>),</span>
+<span id="cb4-21"><a href="#cb4-21"></a>treadmill_exp <span class="kw">AS</span> (</span>
+<span id="cb4-22"><a href="#cb4-22"></a>    <span class="kw">SELECT</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="co">-- assume 0.5kcal/minute</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>        <span class="fu">sum</span>(t.duration_min) <span class="op">*</span> <span class="fl">0.5</span> <span class="kw">AS</span> total_treadmill_exp</span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="kw">FROM</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>        treadmill t</span>
+<span id="cb4-27"><a href="#cb4-27"></a>    <span class="kw">WHERE</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>        <span class="dt">date</span> <span class="kw">BETWEEN</span> <span class="ch">:start_date</span> :: <span class="dt">timestamp</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>        <span class="kw">AND</span> <span class="ch">:end_date</span> :: <span class="dt">timestamp</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>)</span>
+<span id="cb4-31"><a href="#cb4-31"></a></span>
+<span id="cb4-32"><a href="#cb4-32"></a><span class="kw">SELECT</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>    (consumption.total_cons <span class="op">-</span> bike_exp.total_bike_exp <span class="op">-</span> </span>
+<span id="cb4-34"><a href="#cb4-34"></a>        treadmill_exp.total_bike_exp) <span class="kw">AS</span> net_kcal</span>
+<span id="cb4-35"><a href="#cb4-35"></a><span class="kw">FROM</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>    bike_exp,</span>
+<span id="cb4-37"><a href="#cb4-37"></a>    treadmill_exp,</span>
+<span id="cb4-38"><a href="#cb4-38"></a>    consumption</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If we follow the manual steps above, we could run this query directly on the database and do some manual calculations to make sure the net calories make sense. But there are some issues we could run into:</p>
+<ol type="1">
+<li>We have limited treadmill data (or none) to test our query since this is a new data source.</li>
+<li>We can’t easily test how our query will handle edge cases since they’re rare or don’t exist yet. Some edge cases we would want to test:
+<ol type="a">
+<li>no treadmill data between the start and end dates</li>
+<li>no bike data between the start and end dates</li>
+<li>all true/false combinations of a. and b.</li>
+<li>expenditure is higher than consumption</li>
+</ol></li>
+<li>Syntax errors/typos could be introduced in the process of copy/pasting between the SQL client and the application.</li>
+</ol>
+</section>
+<section id="automated-testing" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Automated testing</h1>
+<p>Hopefully there’s enough motivation to look for an automated and repeatable way to test the query, so we can start implementing the <a href="#the-end-goal">end goal</a> mentioned above.</p>
+<section id="instantiate-the-test-database" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="instantiate-the-test-database"><span class="header-section-number">5.1</span> Instantiate the test database</h2>
+<p>Before doing any querying or testing, we need to start a database instance - docker makes this quite painless.</p>
+<p>We’ll define the image in a Dockerfile and add some seed data that we’ll need for our query. We could’ve chosen to add this data in our tests or fixtures, but since this is reference data and is not specific to a test, we can add it in during the image build.</p>
+<p>The seed data script creates the table and adds the reference data:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="kw">public</span>.food_ref (</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="kw">id</span> <span class="dt">varchar</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="ot">"name"</span> <span class="dt">varchar</span> <span class="kw">NULL</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="ot">"kcal/unit"</span> int4 <span class="kw">NULL</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>    unit_of_measure <span class="dt">varchar</span> <span class="kw">NULL</span>,</span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="kw">CONSTRAINT</span> food_ref_pkey <span class="kw">PRIMARY</span> <span class="kw">KEY</span> (<span class="kw">id</span>)</span>
+<span id="cb5-7"><a href="#cb5-7"></a>);</span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="kw">INSERT</span> <span class="kw">INTO</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>    <span class="kw">public</span>.food_ref (<span class="kw">id</span>, <span class="ot">"name"</span>, <span class="ot">"kcal/unit"</span>, unit_of_measure)</span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="kw">VALUES</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>(<span class="st">'a'</span>, <span class="st">'bread'</span>, <span class="dv">10</span>, <span class="st">'g'</span>)</span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">-- we can add more values here;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The postgres docker image will run any .sql (or .sh) scripts in docker-entrypoint-initdb.d/ so we can copy our seed script there:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">FROM</span> postgres:10-alpine</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">ENV</span> POSTGRES_USER=postgres</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">ENV</span> POSTGRES_PASSWORD=password</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">EXPOSE</span> 5432</span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co"># seed database with food reference data</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">COPY</span> ./seed_scripts/food_ref.sql /docker-entrypoint-initdb.d/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="setup-fixtures" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="setup-fixtures"><span class="header-section-number">5.2</span> Setup fixtures</h2>
+<p>We can define a session-scope fixture which uses the docker library to build the image and run the container for our tests. Using yield here means that once the tests have run, control is returned back to this fixture and we can remove the container and image so we return to a clean state.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="at">@pytest.fixture</span>(scope<span class="op">=</span><span class="st">"session"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">def</span> postgres_container():</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    <span class="co">"""start docker instance of postgres"""</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    client <span class="op">=</span> docker.from_env()</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    client.images.build(</span>
+<span id="cb7-7"><a href="#cb7-7"></a>        path<span class="op">=</span>TEST_DB_DOCKERFILE_PATH, tag<span class="op">=</span><span class="st">"test_postgres"</span>, nocache<span class="op">=</span><span class="va">True</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    )</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-11"><a href="#cb7-11"></a>        <span class="co"># create container</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>        db_container <span class="op">=</span> client.containers.run(</span>
+<span id="cb7-13"><a href="#cb7-13"></a>            <span class="st">"test_postgres"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14"></a>            name<span class="op">=</span><span class="st">"test_db"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15"></a>            detach<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb7-16"><a href="#cb7-16"></a>            ports<span class="op">=</span>{<span class="dv">5432</span>: <span class="dv">5432</span>},</span>
+<span id="cb7-17"><a href="#cb7-17"></a>        )</span>
+<span id="cb7-18"><a href="#cb7-18"></a></span>
+<span id="cb7-19"><a href="#cb7-19"></a>    <span class="cf">except</span> APIError:</span>
+<span id="cb7-20"><a href="#cb7-20"></a>        <span class="co"># docker api returns an error sincewe already have a container</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a>        <span class="co"># remove existing container and make a new one</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>        db_container <span class="op">=</span> client.containers.get(<span class="st">"test_db"</span>)</span>
+<span id="cb7-23"><a href="#cb7-23"></a>        db_container.remove()  <span class="co"># type:ignore</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a>        db_container <span class="op">=</span> client.containers.run(</span>
+<span id="cb7-25"><a href="#cb7-25"></a>            <span class="st">"test_postgres"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26"></a>            name<span class="op">=</span><span class="st">"test_db"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27"></a>            detach<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb7-28"><a href="#cb7-28"></a>            ports<span class="op">=</span>{<span class="dv">5432</span>: <span class="dv">5432</span>},</span>
+<span id="cb7-29"><a href="#cb7-29"></a>        )</span>
+<span id="cb7-30"><a href="#cb7-30"></a>    <span class="co"># return to calling function so we can use the container</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a>    <span class="cf">yield</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a>    <span class="co"># calling function is done so we can stop and remove the container</span></span>
+<span id="cb7-33"><a href="#cb7-33"></a>    db_container.stop()  <span class="co"># type:ignore</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a>    db_container.remove()  <span class="co"># type:ignore</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The only other setup we need is to create a fixture for a session that runs on the test database container above, this will allow us to define some steps to connect, run our tests and then cleanup the database to remove all the data we added for our test:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="at">@pytest.fixture</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">def</span> test_session(postgres_container) <span class="op">-&gt;</span> Iterator[Session]:</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    <span class="co">"""create db session and cleanup data after each test"""</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="co"># testing connection string</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    DOCKER_USERNAME <span class="op">=</span> <span class="st">"postgres"</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    DOCKER_PASSWORD <span class="op">=</span> <span class="st">"password"</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>    DOCKER_HOSTNAME <span class="op">=</span> <span class="st">"localhost:5432"</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>    DOCKER_DB_NAME <span class="op">=</span> <span class="st">"postgres"</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>    sql_url <span class="op">=</span> (</span>
+<span id="cb8-11"><a href="#cb8-11"></a>        <span class="ss">f"postgresql://</span><span class="sc">{</span>DOCKER_USERNAME<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>DOCKER_PASSWORD<span class="sc">}</span><span class="ss">@"</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>        <span class="ss">f"</span><span class="sc">{</span>DOCKER_HOSTNAME<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>DOCKER_DB_NAME<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>    )</span>
+<span id="cb8-14"><a href="#cb8-14"></a>    engine <span class="op">=</span> create_engine(sql_url, pool_pre_ping<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a>    <span class="co"># wait until db is ready</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a>    MAX_RETRIES <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>    <span class="co">#  max value for backoff time</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>    MAX_RETRY_SLEEP_SEC <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a></span>
+<span id="cb8-21"><a href="#cb8-21"></a>    num_retries <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a>    <span class="cf">try</span>:</span>
+<span id="cb8-23"><a href="#cb8-23"></a>        <span class="cf">while</span> num_retries <span class="op">&lt;</span> MAX_RETRIES:</span>
+<span id="cb8-24"><a href="#cb8-24"></a>            num_retries <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>            <span class="co"># keep increasing back off time until MAX_RETRY_SLEEP_SEC</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a>            <span class="co"># using (truncated) exponential backoff</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>            sleep_time_ms <span class="op">=</span> <span class="bu">min</span>(</span>
+<span id="cb8-28"><a href="#cb8-28"></a>                [MAX_RETRY_SLEEP_SEC <span class="op">*</span> <span class="dv">1000</span>, <span class="dv">100</span> <span class="op">*</span> num_retries]</span>
+<span id="cb8-29"><a href="#cb8-29"></a>            )</span>
+<span id="cb8-30"><a href="#cb8-30"></a>            <span class="cf">try</span>:</span>
+<span id="cb8-31"><a href="#cb8-31"></a>                <span class="co"># check if db is ready with simple query</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a>                engine.execute(<span class="st">"SELECT 1"</span>)</span>
+<span id="cb8-33"><a href="#cb8-33"></a>            <span class="cf">except</span> OperationalError:</span>
+<span id="cb8-34"><a href="#cb8-34"></a>                <span class="co"># db is still starting up, continue loop and retry</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a>                sleep(sleep_time_ms <span class="op">/</span> <span class="dv">1000</span>)</span>
+<span id="cb8-36"><a href="#cb8-36"></a>                <span class="cf">continue</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a>            <span class="co"># db has started - lets break out of loop</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a>            <span class="cf">break</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a>    <span class="cf">except</span> OperationalError:</span>
+<span id="cb8-40"><a href="#cb8-40"></a>        <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="st">"Couldn't connect to Test Postgres Docker Instance!"</span>)</span>
+<span id="cb8-41"><a href="#cb8-41"></a></span>
+<span id="cb8-42"><a href="#cb8-42"></a>    <span class="co"># create all tables registered to our declarative base class</span></span>
+<span id="cb8-43"><a href="#cb8-43"></a>    Base.metadata.create_all(engine)</span>
+<span id="cb8-44"><a href="#cb8-44"></a>    <span class="cf">with</span> Session(engine) <span class="im">as</span> session:</span>
+<span id="cb8-45"><a href="#cb8-45"></a>        <span class="cf">yield</span> session</span>
+<span id="cb8-46"><a href="#cb8-46"></a>        session.commit()</span>
+<span id="cb8-47"><a href="#cb8-47"></a></span>
+<span id="cb8-48"><a href="#cb8-48"></a>    <span class="co"># clean up our db</span></span>
+<span id="cb8-49"><a href="#cb8-49"></a>    Base.metadata.drop_all(engine)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The logic in <code>ln16</code> - <code>ln38</code> ensures that we do not try to create our session before the database in the container is ready. The <code>client.containers.run</code> function in the <code>postgres_container</code> fixture returns before the database is ready since the container has already started successfully.</p>
+</section>
+<section id="the-payoff" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="the-payoff"><span class="header-section-number">5.3</span> The payoff</h2>
+<p>Finally we can actually test our query:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> test_get_net_calories(test_session: Session):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    food_cons <span class="op">=</span> FoodConsumption(</span>
+<span id="cb9-3"><a href="#cb9-3"></a>        food_id<span class="op">=</span><span class="st">"a"</span>, qty<span class="op">=</span><span class="st">"100"</span>, date<span class="op">=</span>datetime.date.today()</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    )</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    bike_session <span class="op">=</span> Bike(</span>
+<span id="cb9-6"><a href="#cb9-6"></a>        date<span class="op">=</span>datetime.date.today(), speed_mph<span class="op">=</span><span class="dv">5</span>, duration_min<span class="op">=</span><span class="dv">20</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>    )</span>
+<span id="cb9-8"><a href="#cb9-8"></a>    <span class="cf">with</span> test_session:</span>
+<span id="cb9-9"><a href="#cb9-9"></a>        test_session.add_all([food_cons, bike_session])</span>
+<span id="cb9-10"><a href="#cb9-10"></a>        test_session.commit()</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a>    result <span class="op">=</span> get_total_net_calories(test_session)</span>
+<span id="cb9-13"><a href="#cb9-13"></a></span>
+<span id="cb9-14"><a href="#cb9-14"></a>    <span class="cf">assert</span> result <span class="op">==</span> <span class="dv">980</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Breaking down what happens when we run our test:</p>
+<ol type="1">
+<li><code>ln1</code> we pass in <code>test_session</code> to our test which call the <code>test_session</code> fixture above</li>
+<li>The <code>test_session</code> fixture call the <code>postgres_container</code> fixture</li>
+<li>The db image is built, seeded with reference data and the container is started</li>
+<li>A session is created after connecting to the db container</li>
+<li><code>ln2</code> - <code>ln10</code> we add some data specific to our test (ARRANGE)</li>
+<li><code>ln12</code> we run our function under test and pass it the <code>test_session</code> (ACT)</li>
+<li><code>ln14</code> we ensure the data is what we expect (ASSERT)<br>
+</li>
+<li>Return to the <code>test_session</code> fixture and delete all data in the db (i.e.&nbsp;undo step 5.)</li>
+<li>Return to the <code>postgres_container</code> fixture and stop the container and remove it.</li>
+<li>???</li>
+<li>PROFIT!!!</li>
+</ol>
+
 
 
 </section>
+</section>
 
-</main> <!-- /main -->
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
