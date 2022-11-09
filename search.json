@@ -4,7 +4,7 @@
     "href": "posts/pytest-sql/index.html",
     "title": "Pytest and SQL",
     "section": "",
-    "text": "The code referenced in this post can be found here\nJump to the actual testing part (skip all the intro stuff)"
+    "text": "The source code for the demo referenced in this post can be found here. You can jump to the actual testing part here (skip all the intro stuff)\nAny thoughts, comments or ideas? Please let me know here!"
   },
   {
     "objectID": "posts/pytest-sql/index.html#instantiate-the-test-database",
@@ -32,13 +32,13 @@
     "href": "index.html",
     "title": "My Blog",
     "section": "",
-    "text": "14 min\n\n\n\nsql\n\n\npython\n\n\npytest\n\n\n\n\nSep 11, 2022\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Any thoughts, comments or ideas? Please let me know here!"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "You can reach out to me through any of the links below:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMy Blog\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nPytest and SQL\n\n\n\n\n\n\n\n\n\n\n\nSep 11, 2022\n\n\n\n\n\n\nNo matching items"
+    "text": "You can reach out to me through any of the links below:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMy Blog\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nPytest and SQL\n\n\n\n\nAutomating the testing of your SQL queries\n\n\n\n\n\n\nSep 11, 2022\n\n\n\n\n\n\nNo matching items\n\nAny thoughts, comments or ideas? Please let me know here!"
   }
 ]
