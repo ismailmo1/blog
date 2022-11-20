@@ -4,8 +4,13 @@
     "items": []
   },
   {
+    "listing": "/posts/CL19-strangers/avail-heatmaps.html",
+    "items": []
+  },
+  {
     "listing": "/index.html",
     "items": [
+      "/posts/CL19-strangers/avail-heatmaps.html",
       "/posts/pytest-sql/index.html"
     ]
   },
@@ -13,7 +18,8 @@
     "listing": "/about.html",
     "items": [
       "/index.html",
-      "/posts/pytest-sql/index.html"
+      "/posts/pytest-sql/index.html",
+      "/posts/CL19-strangers/avail-heatmaps.html"
     ]
   }
 ]

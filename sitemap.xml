@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/pytest-sql/index.html</loc>
-    <lastmod>2022-11-09T19:53:22.870Z</lastmod>
+    <lastmod>2022-11-20T10:50:06.307Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ismailmo1/blog/posts/CL19-strangers/avail-heatmaps.html</loc>
+    <lastmod>2022-11-20T10:50:07.639Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/index.html</loc>
-    <lastmod>2022-11-09T19:53:23.998Z</lastmod>
+    <lastmod>2022-11-20T10:50:08.631Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/about.html</loc>
-    <lastmod>2022-11-09T19:53:24.394Z</lastmod>
+    <lastmod>2022-11-20T10:50:09.019Z</lastmod>
   </url>
 </urlset>
