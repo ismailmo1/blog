@@ -270,6 +270,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
   <li><a href="#initial-visualisation" id="toc-initial-visualisation" class="nav-link" data-scroll-target="#initial-visualisation"><span class="toc-section-number">3</span>  Initial Visualisation</a></li>
   <li><a href="#more-data-processing" id="toc-more-data-processing" class="nav-link" data-scroll-target="#more-data-processing"><span class="toc-section-number">4</span>  More Data Processing</a></li>
   <li><a href="#final-visualisation" id="toc-final-visualisation" class="nav-link" data-scroll-target="#final-visualisation"><span class="toc-section-number">5</span>  Final Visualisation</a></li>
+  <li><a href="#feedback" id="toc-feedback" class="nav-link" data-scroll-target="#feedback"><span class="toc-section-number">6</span>  Feedback</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/quarto-dev/quarto-demo/blob/main/posts/CL19-strangers/avail-heatmaps.ipynb" class="toc-action">Edit this page</a></p><p><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
 </nav>
@@ -306,7 +307,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="data-collection" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Data Collection</h1>
 <p>There are many free resources for football data, but <a href="transfermarket">transfermarket</a> seemed to be the best option to minimise the post-processing needed for this analysis. The code used to scrape this data can be found <a href="https://github.com/ismailmo1/football-data-viz/tree/main/transfermarket">here</a> - the key libraries used were <a href="https://pandas.pydata.org/">pandas</a>, <a href="https://beautiful-soup-4.readthedocs.io/en/latest/">beautifulsoup</a> and <a href="https://requests.readthedocs.io/en/latest/">requests</a>.</p>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="1">
 <details>
 <summary>Data collection and processing libraries</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> sys</span>
@@ -327,16 +328,16 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb1-16"><a href="#cb1-16"></a><span class="im">from</span> transfermarket <span class="im">import</span> leagues, players, teams</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>prem_clubs_18 <span class="op">=</span> leagues.get_prem_club_list(season<span class="op">=</span><span class="st">"2018"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2"></a>lpool_19_players <span class="op">=</span> teams.get_players(team_url<span class="op">=</span>prem_clubs_18[<span class="st">'Liverpool FC'</span>])</span>
 <span id="cb2-3"><a href="#cb2-3"></a>lpool_19_players.keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>dict_keys(['Ben Woodburn', 'Dominic Solanke', 'Alex Oxlade-Chamberlain', 'Curtis Jones', 'Isaac Christie-Davies', 'James Milner', 'Rhian Brewster', 'Rafael Camacho', 'Alberto Moreno', 'Dejan Lovren', 'Jordan Henderson', 'Mohamed Salah', 'Joe Gomez', 'Ki-Jana Hoever', 'Naby Keïta', 'Caoimhín Kelleher', 'Adam Lallana', 'Alisson', 'Simon Mignolet', 'Roberto Firmino', 'Connor Randall', 'Ádám Bogdán', 'Fabinho', 'Marko Grujić', 'Kamil Grabara', 'Virgil van Dijk', 'Joel Matip', 'Trent Alexander-Arnold', 'Nathaniel Clyne', 'Xherdan Shaqiri', 'Harry Wilson', 'Georginio Wijnaldum', 'Loris Karius', 'Andrew Robertson', 'Sadio Mané', 'Divock Origi', 'Danny Ings', 'Daniel Sturridge', 'Sheyi Ojo'])</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>dict_keys(['Virgil van Dijk', 'Adam Lallana', 'Sheyi Ojo', 'Andrew Robertson', 'Alisson', 'Georginio Wijnaldum', 'Roberto Firmino', 'Dominic Solanke', 'Rhian Brewster', 'Ádám Bogdán', 'Loris Karius', 'Harry Wilson', 'Alex Oxlade-Chamberlain', 'Kamil Grabara', 'Jordan Henderson', 'Daniel Sturridge', 'Divock Origi', 'Nathaniel Clyne', 'Ben Woodburn', 'Danny Ings', 'Sadio Mané', 'Joel Matip', 'Isaac Christie-Davies', 'James Milner', 'Caoimhín Kelleher', 'Joe Gomez', 'Simon Mignolet', 'Fabinho', 'Marko Grujić', 'Ki-Jana Hoever', 'Trent Alexander-Arnold', 'Rafael Camacho', 'Xherdan Shaqiri', 'Dejan Lovren', 'Curtis Jones', 'Alberto Moreno', 'Connor Randall', 'Naby Keïta', 'Mohamed Salah'])</code></pre>
 </div>
 </div>
 <p>We’re only interested in the starting 11 from the final so the we can filter out the other players from the squad:</p>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>cl_19_lineup <span class="op">=</span> [<span class="st">'Trent Alexander-Arnold'</span>,</span>
 <span id="cb4-2"><a href="#cb4-2"></a>                <span class="st">'Georginio Wijnaldum'</span>,</span>
 <span id="cb4-3"><a href="#cb4-3"></a>                <span class="st">'Fabinho'</span>,</span>
@@ -362,7 +363,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <li>Played (sub)</li>
 <li>Played (starter)</li>
 </ol>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>avail_18_19 <span class="op">=</span> []</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="cf">for</span> player,url <span class="kw">in</span> cl_19_lineup_urls.items():</span>
@@ -373,29 +374,29 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="data-processing" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Data Processing</h1>
 <p>Most of the data processing is done in a separate module (see code <a href="https://github.com/ismailmo1/football-data-viz/tree/main/transfermarket">here</a>) but for this specific analysis we want to ensure we are only looking at data related to Liverpool fixtures, since the player availability data will also include international games for their country.</p>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>strangers<span class="op">=</span> pd.concat(avail_18_19)</span>
 <span id="cb6-2"><a href="#cb6-2"></a>liverpool_fix <span class="op">=</span> teams.get_team_fixtures(prem_clubs_18[<span class="st">"Liverpool FC"</span>], <span class="st">"2018"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3"></a>fixtures_num_starters <span class="op">=</span> strangers.T.join(liverpool_fix, how<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb6-4"><a href="#cb6-4"></a>heatmap_data <span class="op">=</span> fixtures_num_starters.iloc[:, :<span class="dv">11</span>].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are also cases where the availability doesn’t fall into any of the categories above, so in that case we assume that they weren’t in the squad. This usually occurs when the player is suspended since the web-scraping logic doesn’t account for that (yet) - but there could also be other cases where transfermarket’s description doesn’t meet any of the logic defined in the web-scraping functions. We’ll see some more examples later where there are rooms for improvement in the web-scraper and the visualisations help identify these.</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># assumption: NaN value means they were likely suspended</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co"># either way they werent in the squad so makes sense </span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="co"># to assign that (to me atleast!) </span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>fixtures_num_starters.fillna(<span class="dv">3</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>fixtures_num_starters.fillna(<span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb7-5"><a href="#cb7-5"></a>fixtures_num_starters <span class="op">=</span> fixtures_num_starters.iloc[:,:<span class="dv">11</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The number of players in the starting lineup can be calculated from the availability category they were put into: we can take a sum of all the instances of “Played (starter)” for each game.</p>
-<div class="cell" data-execution_count="10">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># add count</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>fixtures_num_starters[<span class="st">'strangers_count'</span>] <span class="op">=</span> (fixtures_num_starters <span class="op">==</span> <span class="dv">4</span> ).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a>fixtures_num_starters.reset_index(inplace<span class="op">=</span><span class="va">True</span>, drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This is what our processed data looks like (showing first 5 rows only)</p>
-<div class="cell" data-execution_count="15">
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="8">
 
 <div>
 
@@ -403,62 +404,62 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
   <thead>
     <tr>
       <th></th>
-      <th>jordan-henderson</th>
-      <th>mohamed-salah</th>
-      <th>alisson</th>
-      <th>roberto-firmino</th>
-      <th>fabinho</th>
       <th>virgil-van-dijk</th>
-      <th>joel-matip</th>
-      <th>trent-alexander-arnold</th>
-      <th>georginio-wijnaldum</th>
       <th>andrew-robertson</th>
+      <th>alisson</th>
+      <th>georginio-wijnaldum</th>
+      <th>roberto-firmino</th>
+      <th>jordan-henderson</th>
       <th>sadio-mane</th>
+      <th>joel-matip</th>
+      <th>fabinho</th>
+      <th>trent-alexander-arnold</th>
+      <th>mohamed-salah</th>
       <th>strangers_count</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
       <td>1.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>2.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>8</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
       <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>8</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>3.0</td>
       <td>1.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>8</td>
@@ -469,26 +470,26 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
       <td>4.0</td>
       <td>4.0</td>
       <td>4.0</td>
-      <td>1.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>4.0</td>
       <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>9</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>3.0</td>
       <td>2.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>8</td>
@@ -502,7 +503,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="initial-visualisation" class="level1 page-columns page-full" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Initial Visualisation</h1>
 <p>Now for the fun part! Since our data is 2 dimensional : players and dates, a heatmap seems like it would be a good way to to visualise the availability of each individual player over the course of the season, and a bar plot to keep count of how many of them started the game:</p>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="9">
 <details>
 <summary>Visualisation libraries</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="im">import</span> matplotlib</span>
@@ -521,7 +522,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <li>Improve color scheme to make it more accessible</li>
 <li>Align the bars in the bar plot so it is aligned with the heatmap squares - currently it is offset</li>
 </ul>
-<div class="cell page-columns page-full" data-execution_count="21">
+<div class="cell page-columns page-full" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>fig,(ax1,ax2) <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">10</span>), nrows<span class="op">=</span><span class="dv">2</span>, sharex<span class="op">=</span><span class="va">True</span>, height_ratios<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">4</span>], constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>
 <span id="cb10-3"><a href="#cb10-3"></a>bar_plot <span class="op">=</span> ax1.bar(fixtures_num_starters.index, fixtures_num_starters[<span class="st">"strangers_count"</span>])</span>
@@ -534,10 +535,10 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </section>
 <section id="more-data-processing" class="level1 page-columns page-full" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> More Data Processing</h1>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>liverpool_fix_17_18 <span class="op">=</span> teams.get_team_fixtures(prem_clubs_18[<span class="st">"Liverpool FC"</span>], <span class="st">"2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>avail_17_18 <span class="op">=</span> []</span>
 <span id="cb12-2"><a href="#cb12-2"></a></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="cf">for</span> player,url <span class="kw">in</span> cl_19_lineup_urls.items():</span>
@@ -547,12 +548,12 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb12-7"><a href="#cb12-7"></a>    avail_17_18.append(avail_df.T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>More data, more problems - we now need to account for when players didn’t play for Liverpool - e.g.&nbsp;Virgil Van Dijk only join in January 2018 and was playing for Southampton during the first half of the season:</p>
-<div class="cell" data-execution_count="55">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a>vvd_idx <span class="op">=</span> [idx <span class="cf">for</span> idx, df <span class="kw">in</span> <span class="bu">enumerate</span>(avail_17_18) <span class="cf">if</span> <span class="st">'virgil'</span> <span class="kw">in</span> df.index[<span class="dv">0</span>]][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="42">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a>avail_17_18[vvd_idx].iloc[:<span class="dv">5</span>, :<span class="dv">5</span>].dropna(axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="42">
+<div class="cell-output cell-output-display" data-execution_count="14">
 
 <div>
 
@@ -602,7 +603,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 </div>
 <p>We can account for this by adding another category to our availability levels:</p>
-<div class="cell" data-execution_count="56">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">def</span> is_liverpool(rw):</span>
 <span id="cb15-2"><a href="#cb15-2"></a>    <span class="cf">try</span>:</span>
 <span id="cb15-3"><a href="#cb15-3"></a>        <span class="cf">if</span> <span class="st">'Liverpool'</span> <span class="kw">in</span> rw[<span class="st">'Home team.1'</span>] <span class="kw">or</span> <span class="st">'Liverpool'</span> <span class="kw">in</span> rw[<span class="st">'Away team.1'</span>]:</span>
@@ -625,9 +626,9 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb15-20"><a href="#cb15-20"></a>vvd.iloc[:,<span class="dv">0</span>] <span class="op">=</span> vvd.<span class="bu">apply</span>(add_diff_team_availability, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This heuristic doesn’t work when they play against Liverpool for their old club - but we can just fix that manually since it’ll be easy to spot (one game for Liverpool surrounded by loads of games for Southampton will stick out like a sore thumb)</p>
-<div class="cell" data-execution_count="60">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a>vvd.sample(<span class="dv">5</span>).iloc[:, :<span class="dv">3</span>].dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="60">
+<div class="cell-output cell-output-display" data-execution_count="16">
 
 <div>
 
@@ -648,29 +649,41 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
   </thead>
   <tbody>
     <tr>
-      <th>2017-11-18</th>
+      <th>2018-05-06</th>
       <td>4</td>
-      <td>Liverpool (5.)</td>
-      <td>Southampton (13.)</td>
+      <td>Chelsea (5.)</td>
+      <td>Liverpool (4.)</td>
     </tr>
     <tr>
-      <th>2017-11-04</th>
+      <th>2018-02-11</th>
+      <td>4</td>
+      <td>Southampton (15.)</td>
+      <td>Liverpool (3.)</td>
+    </tr>
+    <tr>
+      <th>2018-04-21</th>
+      <td>4</td>
+      <td>West Brom (20.)</td>
+      <td>Liverpool (3.)</td>
+    </tr>
+    <tr>
+      <th>2017-11-29</th>
       <td>-1</td>
+      <td>Man City (1.)</td>
       <td>Southampton (10.)</td>
-      <td>Burnley (7.)</td>
     </tr>
     <tr>
-      <th>2017-08-12</th>
-      <td>-1</td>
-      <td>Southampton (11.)</td>
-      <td>Swansea (12.)</td>
+      <th>2018-02-04</th>
+      <td>4</td>
+      <td>Liverpool (3.)</td>
+      <td>Spurs (5.)</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="61">
+<div class="cell" data-execution_count="17">
 <details>
 <summary>Let’s now grab data for the seasons before and after (17/18 and 19/20, 20/21 and 21/22)</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># should have refactored the data collection/processing loop into a function</span></span>
@@ -688,7 +701,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-13"><a href="#cb17-13"></a>    avail_17_18.append(transposed_df)</span>
 <span id="cb17-14"><a href="#cb17-14"></a>    </span>
 <span id="cb17-15"><a href="#cb17-15"></a>avail_17_18_all <span class="op">=</span> pd.concat(avail_17_18)</span>
-<span id="cb17-16"><a href="#cb17-16"></a>avail_17_18_all.fillna(<span class="dv">3</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-16"><a href="#cb17-16"></a>avail_17_18_all.fillna(<span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb17-17"><a href="#cb17-17"></a></span>
 <span id="cb17-18"><a href="#cb17-18"></a><span class="co"># add count</span></span>
 <span id="cb17-19"><a href="#cb17-19"></a>long_avail_17_18_df <span class="op">=</span> avail_17_18_all.T</span>
@@ -709,7 +722,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-34"><a href="#cb17-34"></a>    avail_19_20.append(transposed_df)</span>
 <span id="cb17-35"><a href="#cb17-35"></a>    </span>
 <span id="cb17-36"><a href="#cb17-36"></a>avail_19_20_all <span class="op">=</span> pd.concat(avail_19_20)</span>
-<span id="cb17-37"><a href="#cb17-37"></a>avail_19_20_all.fillna(<span class="dv">3</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-37"><a href="#cb17-37"></a>avail_19_20_all.fillna(<span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb17-38"><a href="#cb17-38"></a></span>
 <span id="cb17-39"><a href="#cb17-39"></a><span class="co"># add count</span></span>
 <span id="cb17-40"><a href="#cb17-40"></a>long_avail_19_20_df <span class="op">=</span> avail_19_20_all.T</span>
@@ -732,7 +745,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-57"><a href="#cb17-57"></a>    avail_20_21.append(transposed_df)</span>
 <span id="cb17-58"><a href="#cb17-58"></a>    </span>
 <span id="cb17-59"><a href="#cb17-59"></a>avail_20_21_all <span class="op">=</span> pd.concat(avail_20_21)</span>
-<span id="cb17-60"><a href="#cb17-60"></a>avail_20_21_all.fillna(<span class="dv">3</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-60"><a href="#cb17-60"></a>avail_20_21_all.fillna(<span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb17-61"><a href="#cb17-61"></a></span>
 <span id="cb17-62"><a href="#cb17-62"></a><span class="co"># add count</span></span>
 <span id="cb17-63"><a href="#cb17-63"></a>long_avail_20_21_df <span class="op">=</span> avail_20_21_all.T</span>
@@ -754,7 +767,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-79"><a href="#cb17-79"></a>    avail_21_22.append(transposed_df)</span>
 <span id="cb17-80"><a href="#cb17-80"></a>    </span>
 <span id="cb17-81"><a href="#cb17-81"></a>avail_21_22_all <span class="op">=</span> pd.concat(avail_21_22)</span>
-<span id="cb17-82"><a href="#cb17-82"></a>avail_21_22_all.fillna(<span class="dv">3</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-82"><a href="#cb17-82"></a>avail_21_22_all.fillna(<span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb17-83"><a href="#cb17-83"></a></span>
 <span id="cb17-84"><a href="#cb17-84"></a><span class="co"># add count</span></span>
 <span id="cb17-85"><a href="#cb17-85"></a>long_avail_21_22_df <span class="op">=</span> avail_21_22_all.T</span>
@@ -770,9 +783,117 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-95"><a href="#cb17-95"></a>all_avail[<span class="st">'date'</span>] <span class="op">=</span> all_fix_dates</span>
 <span id="cb17-96"><a href="#cb17-96"></a>all_avail.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>virgil-van-dijk</th>
+      <th>andrew-robertson</th>
+      <th>alisson</th>
+      <th>georginio-wijnaldum</th>
+      <th>roberto-firmino</th>
+      <th>jordan-henderson</th>
+      <th>sadio-mane</th>
+      <th>joel-matip</th>
+      <th>fabinho</th>
+      <th>trent-alexander-arnold</th>
+      <th>mohamed-salah</th>
+      <th>strangers_count</th>
+      <th>date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>282</th>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>-1.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>6</td>
+      <td>2022-05-10</td>
+    </tr>
+    <tr>
+      <th>283</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>-1.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>7</td>
+      <td>2022-05-14</td>
+    </tr>
+    <tr>
+      <th>284</th>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>-1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>3</td>
+      <td>2022-05-17</td>
+    </tr>
+    <tr>
+      <th>285</th>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>-1.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>6</td>
+      <td>2022-05-22</td>
+    </tr>
+    <tr>
+      <th>286</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>-1.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>8</td>
+      <td>2022-05-28</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
 </div>
 <p>To address some of the ugliness from the <a href="#initial-visualisation">initial visualisation</a> we can make some changes in the visualisation setup (expand code and see comments):</p>
-<div class="cell page-columns page-full" data-execution_count="68">
+<div class="cell page-columns page-full" data-execution_count="18">
 <details>
 <summary>Visualisation setup</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a>availability_levels_map <span class="op">=</span> {</span>
@@ -819,8 +940,8 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 <p>There are some anomalies where players are marked as “Not at liverpool” even though they definitely were (see Trent, Mane and salah’s red lines)</p>
 <p>Mane and Salah were playing eachother at the AFCON final - so technically the graph is correct :)</p>
-<div class="cell" data-execution_count="69">
-<div class="cell-output cell-output-display" data-execution_count="69">
+<div class="cell" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="19">
 
 <div>
 
@@ -843,8 +964,8 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="70">
-<div class="cell-output cell-output-display" data-execution_count="70">
+<div class="cell" data-execution_count="20">
+<div class="cell-output cell-output-display" data-execution_count="20">
 
 <div>
 
@@ -868,8 +989,8 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 </div>
 <p>For Trent, the England U21 team were playing at the same time (which Trent used to play for) so our <a href="#more-data-processing">logic</a> that adjusted for games played for other clubs (e.g.&nbsp;Van Dijk for Southampton) picked up this game- since this is a rare edge case I’ll just overwrite it manually</p>
-<div class="cell" data-execution_count="71">
-<div class="cell-output cell-output-display" data-execution_count="71">
+<div class="cell" data-execution_count="21">
+<div class="cell-output cell-output-display" data-execution_count="21">
 
 <div>
 
@@ -907,7 +1028,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="72">
+<div class="cell" data-execution_count="22">
 <details>
 <summary>Manually adjusting outlier for Trent</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a>trent_outlier <span class="op">=</span> all_avail[<span class="st">'date'</span>]<span class="op">==</span>datetime.datetime(<span class="dv">2018</span>,<span class="dv">5</span>,<span class="dv">26</span>)</span>
@@ -916,67 +1037,80 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 <p>The visualisation above shows that the full squad were only playing for Liverpool FC during 2018/19 - 2021-22 (see the blocks of red at the start and end of the heatmap) - we can remove the other seasons (we’ll keep a few rows to highlight their departure/arrival at Liverpool).</p>
 <p>Another key change is choosing a better colours palette - <a href="https://colorbrewer2.org/">ColorBrewer</a> is a great resource for finding accessible color schemes based on the research of <a href="http://www.personal.psu.edu/cab38/">Dr Cynthia Brewer</a></p>
-<div class="cell" data-execution_count="75">
+<div class="cell" data-execution_count="23">
 <details>
 <summary>Narrowing down the date range</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a>cl_19_lineup_at_lpool_avail_df <span class="op">=</span> all_avail[(all_avail.loc[:,<span class="st">'date'</span>]<span class="op">&gt;</span>datetime.datetime(<span class="dv">2018</span>,<span class="dv">5</span>,<span class="dv">10</span>)) <span class="op">&amp;</span>( all_avail.loc[:,<span class="st">'date'</span>]<span class="op">&lt;</span>datetime.datetime(<span class="dv">2021</span>,<span class="dv">8</span>,<span class="dv">30</span>))]</span>
 <span id="cb20-2"><a href="#cb20-2"></a>cl_19_lineup_at_lpool_avail_df.reset_index(inplace<span class="op">=</span><span class="va">True</span>, drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="77">
+<div class="cell" data-execution_count="25">
 <details>
 <summary>Final visualisation setup</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a>matplotlib.rcParams[<span class="st">'font.size'</span>] <span class="op">=</span> <span class="st">'20'</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a>plt.rcParams[<span class="st">"axes.titlesize"</span>] <span class="op">=</span><span class="st">"10"</span> </span>
-<span id="cb21-3"><a href="#cb21-3"></a>color_scheme <span class="op">=</span> [<span class="st">'#b2182b'</span>,<span class="st">'#ef8a62'</span>,<span class="st">'#fddbc7'</span>,<span class="st">'#d1e5f0'</span>,<span class="st">'#67a9cf'</span>,<span class="st">'#2166ac'</span>]</span>
-<span id="cb21-4"><a href="#cb21-4"></a>alt_color_scheme <span class="op">=</span> [<span class="st">'#762a83'</span>,<span class="st">'#af8dc3'</span>,<span class="st">'#e7d4e8'</span>,<span class="st">'#d9f0d3'</span>,<span class="st">'#7fbf7b'</span>,<span class="st">'#1b7837'</span>]</span>
-<span id="cb21-5"><a href="#cb21-5"></a></span>
-<span id="cb21-6"><a href="#cb21-6"></a>availability_levels_map <span class="op">=</span> {</span>
-<span id="cb21-7"><a href="#cb21-7"></a>                        <span class="st">'Not at Liverpool'</span> : <span class="op">-</span><span class="dv">1</span>,</span>
-<span id="cb21-8"><a href="#cb21-8"></a>                        <span class="st">'Injured'</span>:<span class="dv">0</span>, </span>
-<span id="cb21-9"><a href="#cb21-9"></a>                        <span class="st">'Not in squad'</span>:<span class="dv">1</span>,</span>
-<span id="cb21-10"><a href="#cb21-10"></a>                        <span class="st">'Bench'</span>:<span class="dv">2</span>, </span>
-<span id="cb21-11"><a href="#cb21-11"></a>                        <span class="st">'Played (sub)'</span>:<span class="dv">3</span>,</span>
-<span id="cb21-12"><a href="#cb21-12"></a>                        <span class="st">'Played (starter)'</span>:<span class="dv">4</span> </span>
-<span id="cb21-13"><a href="#cb21-13"></a>                        }</span>
-<span id="cb21-14"><a href="#cb21-14"></a>fig,(ax1,ax2) <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">10</span>), nrows<span class="op">=</span><span class="dv">2</span>, sharex<span class="op">=</span><span class="va">True</span>, height_ratios<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">4</span>], constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb21-15"><a href="#cb21-15"></a></span>
-<span id="cb21-16"><a href="#cb21-16"></a>bar_plot <span class="op">=</span> ax1.bar(cl_19_lineup_at_lpool_avail_df.index, cl_19_lineup_at_lpool_avail_df[<span class="st">"strangers_count"</span>], align<span class="op">=</span><span class="st">"edge"</span>)</span>
-<span id="cb21-17"><a href="#cb21-17"></a></span>
-<span id="cb21-18"><a href="#cb21-18"></a><span class="co"># highlight champions lg final game</span></span>
-<span id="cb21-19"><a href="#cb21-19"></a><span class="cf">for</span> i,bar <span class="kw">in</span> <span class="bu">enumerate</span>(bar_plot):</span>
-<span id="cb21-20"><a href="#cb21-20"></a>    <span class="cf">if</span> cl_19_lineup_at_lpool_avail_df[<span class="st">"strangers_count"</span>][i] <span class="op">==</span><span class="dv">11</span>:</span>
-<span id="cb21-21"><a href="#cb21-21"></a>        bar.set_color(<span class="st">"r"</span>)</span>
-<span id="cb21-22"><a href="#cb21-22"></a></span>
-<span id="cb21-23"><a href="#cb21-23"></a>ax1.spines[<span class="st">'top'</span>].set_visible(<span class="va">False</span>)</span>
-<span id="cb21-24"><a href="#cb21-24"></a>ax1.spines[<span class="st">'right'</span>].set_visible(<span class="va">False</span>)</span>
-<span id="cb21-25"><a href="#cb21-25"></a>ax1.spines[<span class="st">'bottom'</span>].set_visible(<span class="va">False</span>)</span>
-<span id="cb21-26"><a href="#cb21-26"></a>ax1.spines[<span class="st">'left'</span>].set_visible(<span class="va">False</span>)</span>
-<span id="cb21-27"><a href="#cb21-27"></a></span>
-<span id="cb21-28"><a href="#cb21-28"></a><span class="co"># add horizontal line at 11 players</span></span>
-<span id="cb21-29"><a href="#cb21-29"></a>ax1.axhline(y<span class="op">=</span><span class="dv">11</span>, color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># order players by position</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>heatmap_data <span class="op">=</span> cl_19_lineup_at_lpool_avail_df.loc[:, [<span class="st">'mohamed-salah'</span>,</span>
+<span id="cb21-3"><a href="#cb21-3"></a>                                                      <span class="st">'roberto-firmino'</span>,</span>
+<span id="cb21-4"><a href="#cb21-4"></a>                                                      <span class="st">'sadio-mane'</span>,</span>
+<span id="cb21-5"><a href="#cb21-5"></a>                                                      <span class="st">'jordan-henderson'</span>,</span>
+<span id="cb21-6"><a href="#cb21-6"></a>                                                      <span class="st">'fabinho'</span>,</span>
+<span id="cb21-7"><a href="#cb21-7"></a>                                                      <span class="st">'georginio-wijnaldum'</span>,</span>
+<span id="cb21-8"><a href="#cb21-8"></a>                                                      <span class="st">'andrew-robertson'</span>,</span>
+<span id="cb21-9"><a href="#cb21-9"></a>                                                      <span class="st">'virgil-van-dijk'</span>,</span>
+<span id="cb21-10"><a href="#cb21-10"></a>                                                      <span class="st">'joel-matip'</span>,</span>
+<span id="cb21-11"><a href="#cb21-11"></a>                                                      <span class="st">'trent-alexander-arnold'</span>,</span>
+<span id="cb21-12"><a href="#cb21-12"></a>                                                      <span class="st">'alisson'</span>]].T</span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a>matplotlib.rcParams[<span class="st">'font.size'</span>] <span class="op">=</span> <span class="st">'20'</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>plt.rcParams[<span class="st">"axes.titlesize"</span>] <span class="op">=</span><span class="st">"10"</span> </span>
+<span id="cb21-16"><a href="#cb21-16"></a>color_scheme <span class="op">=</span> [<span class="st">'#b2182b'</span>,<span class="st">'#ef8a62'</span>,<span class="st">'#fddbc7'</span>,<span class="st">'#d1e5f0'</span>,<span class="st">'#67a9cf'</span>,<span class="st">'#2166ac'</span>]</span>
+<span id="cb21-17"><a href="#cb21-17"></a>alt_color_scheme <span class="op">=</span> [<span class="st">'#762a83'</span>,<span class="st">'#af8dc3'</span>,<span class="st">'#e7d4e8'</span>,<span class="st">'#d9f0d3'</span>,<span class="st">'#7fbf7b'</span>,<span class="st">'#1b7837'</span>]</span>
+<span id="cb21-18"><a href="#cb21-18"></a></span>
+<span id="cb21-19"><a href="#cb21-19"></a>availability_levels_map <span class="op">=</span> {</span>
+<span id="cb21-20"><a href="#cb21-20"></a>                        <span class="st">'Not at Liverpool'</span> : <span class="op">-</span><span class="dv">1</span>,</span>
+<span id="cb21-21"><a href="#cb21-21"></a>                        <span class="st">'Injured'</span>:<span class="dv">0</span>, </span>
+<span id="cb21-22"><a href="#cb21-22"></a>                        <span class="st">'Not in squad'</span>:<span class="dv">1</span>,</span>
+<span id="cb21-23"><a href="#cb21-23"></a>                        <span class="st">'Bench'</span>:<span class="dv">2</span>, </span>
+<span id="cb21-24"><a href="#cb21-24"></a>                        <span class="st">'Played (sub)'</span>:<span class="dv">3</span>,</span>
+<span id="cb21-25"><a href="#cb21-25"></a>                        <span class="st">'Played (starter)'</span>:<span class="dv">4</span> </span>
+<span id="cb21-26"><a href="#cb21-26"></a>                        }</span>
+<span id="cb21-27"><a href="#cb21-27"></a>fig,(ax1,ax2) <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">10</span>), nrows<span class="op">=</span><span class="dv">2</span>, sharex<span class="op">=</span><span class="va">True</span>, height_ratios<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">4</span>], constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-28"><a href="#cb21-28"></a></span>
+<span id="cb21-29"><a href="#cb21-29"></a>bar_plot <span class="op">=</span> ax1.bar(cl_19_lineup_at_lpool_avail_df.index, cl_19_lineup_at_lpool_avail_df[<span class="st">"strangers_count"</span>], align<span class="op">=</span><span class="st">"edge"</span>)</span>
 <span id="cb21-30"><a href="#cb21-30"></a></span>
-<span id="cb21-31"><a href="#cb21-31"></a>_ <span class="op">=</span> ax1.set_title(<span class="st">"When stars align: The 2019 CL Final Starting 11"</span>, fontdict<span class="op">=</span>{<span class="st">"fontsize"</span>:<span class="st">"25"</span>} )</span>
-<span id="cb21-32"><a href="#cb21-32"></a>_ <span class="op">=</span> ax1.set_xlabel(<span class="st">""</span>)</span>
-<span id="cb21-33"><a href="#cb21-33"></a>_ <span class="op">=</span> ax1.set_ylabel(<span class="st">"#players"</span>,rotation<span class="op">=</span><span class="st">"vertical"</span>, ha<span class="op">=</span><span class="st">"center"</span>)</span>
-<span id="cb21-34"><a href="#cb21-34"></a>_ <span class="op">=</span> ax1.yaxis.set_major_locator(matplotlib.ticker.FixedLocator([<span class="dv">11</span>]))</span>
-<span id="cb21-35"><a href="#cb21-35"></a>_ <span class="op">=</span> ax1.tick_params(length<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb21-36"><a href="#cb21-36"></a></span>
-<span id="cb21-37"><a href="#cb21-37"></a>num_levels <span class="op">=</span> <span class="bu">len</span>(availability_levels_map.keys())</span>
-<span id="cb21-38"><a href="#cb21-38"></a>plot <span class="op">=</span> sns.heatmap(cl_19_lineup_at_lpool_avail_df.iloc[:, :<span class="op">-</span><span class="dv">2</span>].T, ax<span class="op">=</span>ax2, cmap<span class="op">=</span>color_scheme,linewidths<span class="op">=</span><span class="fl">0.5</span>, linecolor<span class="op">=</span><span class="st">'lightgray'</span>)</span>
-<span id="cb21-39"><a href="#cb21-39"></a>colorbar <span class="op">=</span> plot.collections[<span class="dv">0</span>].colorbar</span>
-<span id="cb21-40"><a href="#cb21-40"></a>total_bar_height <span class="op">=</span> colorbar.vmax <span class="op">-</span> colorbar.vmin </span>
-<span id="cb21-41"><a href="#cb21-41"></a>lvl_bar_height <span class="op">=</span> total_bar_height<span class="op">/</span>num_levels</span>
-<span id="cb21-42"><a href="#cb21-42"></a></span>
+<span id="cb21-31"><a href="#cb21-31"></a><span class="co"># highlight champions lg final game</span></span>
+<span id="cb21-32"><a href="#cb21-32"></a><span class="cf">for</span> i,bar <span class="kw">in</span> <span class="bu">enumerate</span>(bar_plot):</span>
+<span id="cb21-33"><a href="#cb21-33"></a>    <span class="cf">if</span> cl_19_lineup_at_lpool_avail_df[<span class="st">"strangers_count"</span>][i] <span class="op">==</span><span class="dv">11</span>:</span>
+<span id="cb21-34"><a href="#cb21-34"></a>        bar.set_color(<span class="st">"r"</span>)</span>
+<span id="cb21-35"><a href="#cb21-35"></a></span>
+<span id="cb21-36"><a href="#cb21-36"></a>ax1.spines[<span class="st">'top'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb21-37"><a href="#cb21-37"></a>ax1.spines[<span class="st">'right'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb21-38"><a href="#cb21-38"></a>ax1.spines[<span class="st">'bottom'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb21-39"><a href="#cb21-39"></a>ax1.spines[<span class="st">'left'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb21-40"><a href="#cb21-40"></a></span>
+<span id="cb21-41"><a href="#cb21-41"></a><span class="co"># add horizontal line at 11 players</span></span>
+<span id="cb21-42"><a href="#cb21-42"></a>ax1.axhline(y<span class="op">=</span><span class="dv">11</span>, color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
 <span id="cb21-43"><a href="#cb21-43"></a></span>
-<span id="cb21-44"><a href="#cb21-44"></a>colorbar.set_ticks([colorbar.vmin <span class="op">+</span> (lvl_bar_height <span class="op">*</span> (<span class="fl">0.5</span> <span class="op">+</span> i)) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_levels)])</span>
-<span id="cb21-45"><a href="#cb21-45"></a>colorbar.set_ticklabels([<span class="op">*</span>availability_levels_map.keys()])</span>
-<span id="cb21-46"><a href="#cb21-46"></a></span>
-<span id="cb21-47"><a href="#cb21-47"></a>axs_fmtd <span class="op">=</span> [cl_19_lineup_at_lpool_avail_df.loc[<span class="bu">int</span>(i.get_text()), <span class="st">'date'</span>].strftime(<span class="st">"</span><span class="sc">%d</span><span class="st"> %b"</span>) <span class="cf">for</span> i <span class="kw">in</span> ax2.get_xticklabels()]</span>
-<span id="cb21-48"><a href="#cb21-48"></a>_ <span class="op">=</span> ax2.set_xticklabels(axs_fmtd, rotation<span class="op">=</span><span class="st">"vertical"</span>)</span>
-<span id="cb21-49"><a href="#cb21-49"></a>_ <span class="op">=</span> ax2.set_xlabel(<span class="st">""</span>)</span>
-<span id="cb21-50"><a href="#cb21-50"></a>_ <span class="op">=</span> ax2.tick_params(length<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb21-51"><a href="#cb21-51"></a>_ <span class="op">=</span> plt.gcf().text(<span class="fl">0.9</span>, <span class="dv">0</span>, <span class="st">"ismailmo.com"</span>, fontsize<span class="op">=</span><span class="dv">25</span>, fontdict<span class="op">=</span>{<span class="st">'color'</span>:  <span class="st">'blue'</span>} )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-44"><a href="#cb21-44"></a>_ <span class="op">=</span> ax1.set_title(<span class="st">"When stars align: The 2019 CL Final Starting 11"</span>, fontdict<span class="op">=</span>{<span class="st">"fontsize"</span>:<span class="st">"25"</span>} )</span>
+<span id="cb21-45"><a href="#cb21-45"></a>_ <span class="op">=</span> ax1.set_xlabel(<span class="st">""</span>)</span>
+<span id="cb21-46"><a href="#cb21-46"></a>_ <span class="op">=</span> ax1.set_ylabel(<span class="st">"#players"</span>,rotation<span class="op">=</span><span class="st">"vertical"</span>, ha<span class="op">=</span><span class="st">"center"</span>)</span>
+<span id="cb21-47"><a href="#cb21-47"></a>_ <span class="op">=</span> ax1.yaxis.set_major_locator(matplotlib.ticker.FixedLocator([<span class="dv">11</span>]))</span>
+<span id="cb21-48"><a href="#cb21-48"></a>_ <span class="op">=</span> ax1.tick_params(length<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb21-49"><a href="#cb21-49"></a></span>
+<span id="cb21-50"><a href="#cb21-50"></a>num_levels <span class="op">=</span> <span class="bu">len</span>(availability_levels_map.keys())</span>
+<span id="cb21-51"><a href="#cb21-51"></a>plot <span class="op">=</span> sns.heatmap(heatmap_data, ax<span class="op">=</span>ax2, cmap<span class="op">=</span>color_scheme,linewidths<span class="op">=</span><span class="fl">0.5</span>, linecolor<span class="op">=</span><span class="st">'lightgray'</span>)</span>
+<span id="cb21-52"><a href="#cb21-52"></a>colorbar <span class="op">=</span> plot.collections[<span class="dv">0</span>].colorbar</span>
+<span id="cb21-53"><a href="#cb21-53"></a>total_bar_height <span class="op">=</span> colorbar.vmax <span class="op">-</span> colorbar.vmin </span>
+<span id="cb21-54"><a href="#cb21-54"></a>lvl_bar_height <span class="op">=</span> total_bar_height<span class="op">/</span>num_levels</span>
+<span id="cb21-55"><a href="#cb21-55"></a></span>
+<span id="cb21-56"><a href="#cb21-56"></a></span>
+<span id="cb21-57"><a href="#cb21-57"></a>colorbar.set_ticks([colorbar.vmin <span class="op">+</span> (lvl_bar_height <span class="op">*</span> (<span class="fl">0.5</span> <span class="op">+</span> i)) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_levels)])</span>
+<span id="cb21-58"><a href="#cb21-58"></a>colorbar.set_ticklabels([<span class="op">*</span>availability_levels_map.keys()])</span>
+<span id="cb21-59"><a href="#cb21-59"></a></span>
+<span id="cb21-60"><a href="#cb21-60"></a>axs_fmtd <span class="op">=</span> [cl_19_lineup_at_lpool_avail_df.loc[<span class="bu">int</span>(i.get_text()), <span class="st">'date'</span>].strftime(<span class="st">"</span><span class="sc">%d</span><span class="st"> %b"</span>) <span class="cf">for</span> i <span class="kw">in</span> ax2.get_xticklabels()]</span>
+<span id="cb21-61"><a href="#cb21-61"></a>_ <span class="op">=</span> ax2.set_xticklabels(axs_fmtd, rotation<span class="op">=</span><span class="st">"vertical"</span>, ha<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb21-62"><a href="#cb21-62"></a>_ <span class="op">=</span> ax2.set_xlabel(<span class="st">""</span>)</span>
+<span id="cb21-63"><a href="#cb21-63"></a>_ <span class="op">=</span> ax2.tick_params(length<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb21-64"><a href="#cb21-64"></a>_ <span class="op">=</span> plt.gcf().text(<span class="fl">0.9</span>, <span class="dv">0</span>, <span class="st">"ismailmo.com"</span>, fontsize<span class="op">=</span><span class="dv">25</span>, fontdict<span class="op">=</span>{<span class="st">'color'</span>:  <span class="st">'blue'</span>} )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -986,8 +1120,23 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <div class="column-screen">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="annotated_heatmap.png" class="img-fluid figure-img"></p>
+<p><img src="annotated_heatmap_corrected.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">Annotated heatmap</figcaption><p></p>
+</figure>
+</div>
+</div>
+</section>
+<section id="feedback" class="level1 page-columns page-full" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Feedback</h1>
+<p>After posting <a href="https://old.reddit.com/r/LiverpoolFC/comments/yzpj66/the_mystery_behind_the_2019_ucl_final_starting_11/">this on reddit</a> there were some interesting suggestions for further analysis:</p>
+<ul>
+<li>How does this compare with the current season?</li>
+</ul>
+<div class="column-screen">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./comment-requests/season22-23.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">2022-23 season</figcaption><p></p>
 </figure>
 </div>
 </div>
