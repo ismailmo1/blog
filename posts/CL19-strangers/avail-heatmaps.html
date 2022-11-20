@@ -284,18 +284,16 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 
 
 <p><em>This blog was inspired by <a href="https://old.reddit.com/r/LiverpoolFC/comments/yxmvu8/the_liverpool_team_that_started_the_uefa/">this reddit post.</a></em></p>
-<p>You can skip to the final visualisation <a href="#final-visualisation">here</a>.</p>
-<p>On the night of June 1st in 2019, Liverpool would go on to win their 6th Champions League, their first since the dramatic final in 2005 and also the first major trophy won under Jurgen Klopp who joined the club in 2015. That night was significant for many reasons but a strange statistic caught my attention:</p>
-<blockquote class="blockquote">
-<p>The 11 players that started in the Champions league final had never started a game together before, and has never started again since.</p>
-</blockquote>
-<p>The rest of this article will explore the data around this statistic and uncover why this team has only ever started together once.</p>
+<p>On the night of June 1st in 2019, Liverpool would go on to win their 6th Champions League, their first since the dramatic final in 2005 and also the first major trophy won under Jurgen Klopp who joined the club in 2015. That night was significant for many reasons but a strange statistic posted recently caught my attention:</p>
+<div class="column-screen">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="lineup.jpg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Starting 11 for the final</figcaption><p></p>
+<p><img src="./annotated_heatmap_corrected_image.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">The mind boggling stat that pushed me down this rabbit hole, and caused me to spend too much time generating these plots</figcaption><p></p>
 </figure>
 </div>
+</div>
+<p>The rest of this article will explore the data around this statistic, building up to generating the plots above to uncover why this team has only ever started together once.</p>
 <p>This starting lineup is remembered by many fans as <em>the</em> defining team of that era and many of the comments from the reddit post capture why the statistic above is so unintuitive.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1044,7 +1042,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb20-2"><a href="#cb20-2"></a>cl_19_lineup_at_lpool_avail_df.reset_index(inplace<span class="op">=</span><span class="va">True</span>, drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="62">
 <details>
 <summary>Final visualisation setup</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># order players by position</span></span>
