@@ -1,0 +1,5 @@
+{
+  "python.analysis.extraPaths": [
+    "/home/ismail/projects/football-data-viz/transfermarket/"
+  ]
+}
