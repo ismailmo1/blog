@@ -32,11 +32,8 @@ On observation of the network requests in the browser, the food diary page is re
 In the spirit of actually finishing projects I started with a simple (naive) approach of looping through all the dates within the date range and making a request to the corresponding date:
 ```{python}
 import pandas as pd
-import sys
-import warnings
 import asyncio
 import time
-
 ```
 
 Define a 2 month date range to give us enough requests to benchmark on 
