@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-09-12">
+<meta name="dcterms.date" content="2022-12-22">
 <meta name="description" content="Speeding up web scraping in a Streamlit analytics app">
 
 <title>Ismail Mohammed - Async web scraping and Streamlit</title>
@@ -170,14 +170,35 @@ gtag('js', new Date());
   });
 gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+        <script type="text/javascript">
+        window.PlotlyConfig = {MathJaxConfig: 'local'};
+        if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+        if (typeof require !== 'undefined') {
+        require.undef("plotly");
+        requirejs.config({
+            paths: {
+                'plotly': ['https://cdn.plot.ly/plotly-2.16.1.min']
+            }
+        });
+        require(['plotly'], function(Plotly) {
+            window._Plotly = Plotly;
+        });
+        }
+        </script>
+        
 
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Ismail Mohammed - Async web scraping and Streamlit">
 <meta property="og:description" content="Speeding up web scraping in a Streamlit analytics app">
-<meta property="og:image" content="https://github.com/ismailmo1/blog/posts/async-streamlit/pytest_sql.png">
+<meta property="og:image" content="https://github.com/ismailmo1/blog/posts/async-streamlit/asyncio_chart.png">
 <meta property="og:site-name" content="Ismail Mohammed">
+<meta property="og:image:height" content="745">
+<meta property="og:image:width" content="1183">
 </head>
 
 <body class="floating nav-fixed">
@@ -245,7 +266,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 12, 2023</p>
+        <p class="date">December 22, 2022</p>
       </div>
     </div>
     
@@ -256,7 +277,16 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#scraping-the-data" id="toc-scraping-the-data" class="nav-link active" data-scroll-target="#scraping-the-data"><span class="toc-section-number">1</span>  Scraping the data</a></li>
+  <li><a href="#the-simple-solution" id="toc-the-simple-solution" class="nav-link" data-scroll-target="#the-simple-solution"><span class="toc-section-number">2</span>  The simple solution</a></li>
+  <li><a href="#speeding-up-with-httpx-and-async" id="toc-speeding-up-with-httpx-and-async" class="nav-link" data-scroll-target="#speeding-up-with-httpx-and-async"><span class="toc-section-number">3</span>  Speeding up with httpx and async</a></li>
+  <li><a href="#integrating-with-streamlit" id="toc-integrating-with-streamlit" class="nav-link" data-scroll-target="#integrating-with-streamlit"><span class="toc-section-number">4</span>  Integrating with Streamlit</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/quarto-dev/quarto-demo/edit/main/posts/async-streamlit/async_scraping.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
@@ -267,94 +297,178 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 
 
 
-<p>Earlier this year, I built <a href="https://wrapped.ismailmo.com">myfitnesspal wrapped</a>: inspired by Spotify’s famous wrapped campaign, this web app scrapes all your data from myfitnesspal (a food tracking app), processes and analyses the data, and finally gives some cool (in my opinion) statistics and charts about your dietary habits.</p>
+<p>Earlier this year, I built <a href="https://wrapped.ismailmo.com">myfitnesspal wrapped</a>: inspired by Spotify’s famous wrapped campaign, this web app scrapes all your data from myfitnesspal (a food tracking app), processes and analyses the data, and finally gives some cool (in my opinion) statistics and charts about your dietary habits in a <a href="https://streamlit.io">Streamlit</a> app.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://github.com/ismailmo1/mfp-wrapped/raw/develop/app/images/card_preview.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">myfitnesspal wrapped analysis</figcaption><p></p>
 </figure>
 </div>
+<p>While I was fairly happy about how it turned out, it annoyed me how slow it got with larger date ranges, so this article will explore how I improved this by learning about and using python’s asyncio package.</p>
+<section id="scraping-the-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Scraping the data</h1>
 <p>While myfitnesspal does have an API - it requires you to fill out and application form and unfortunately I was unsuccessful in my application. Luckily they do not rate limit requests to the website, so although it wouldn’t be as friendly as a well-formatted JSON response, there was still a way to get all the data.</p>
-<p>On observation of the network requests in the browser, the food diary page is rendered server side, so our last hope of mimicing any API calls was dead - but atleast the url was easy to reason about: just a request to the <code>diary/{user}</code> endpoint with a query param of the date of the food diary.</p>
+<p>On observation of the network requests in the browser, the food diary page is rendered server side, so my last hope of mimicking any API calls was dead - but atleast the url was easy to reason about: just a request to the <code>diary/{user}</code> endpoint with a query param of the date of the food diary.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="./mfp-network-tab.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">snooping around the myfitnesspal network tab</figcaption><p></p>
 </figure>
 </div>
-<p>In the spirit of actually finishing projects I started with a simple (naive) approach of looping through all the dates within the date range and making a request to the corresponding date:</p>
+</section>
+<section id="the-simple-solution" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The simple solution</h1>
+<p>In the spirit of actually finishing projects I started with a simple (naive) approach of looping through all the dates within the date range and making a request for the corresponding date on each iteration.</p>
+<p>For this demo, we’ll scrape a weeks worth of data between 2022-12-15 and 2022-12-22:</p>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> sys</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="im">import</span> asyncio</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="im">import</span> time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> time</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="im">import</span> requests</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a>dates <span class="op">=</span> pd.date_range(<span class="st">"2022-12-15"</span>, <span class="st">"2022-12-22"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Define a 2 month date range to give us enough requests to benchmark on</p>
+<p>Let’s define a function that makes a request for a given user and date with a request client:</p>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>dates <span class="op">=</span> pd.date_range(<span class="st">"2022-10-01"</span>, <span class="st">"2022-11-29"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">def</span> scrape_diary(user, date, client):</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    url <span class="op">=</span> <span class="ss">f"https://www.myfitnesspal.com/food/diary/</span><span class="sc">{</span>user<span class="sc">}</span><span class="ss">?date=</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    res <span class="op">=</span> client.get(url)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="cf">return</span> res.text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Try the standard way of one request at a time</p>
+<p>And then scrape the diaries by looping over each date:</p>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> requests</span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a>start_time <span class="op">=</span> time.perf_counter()</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a>sesh <span class="op">=</span> requests.Session()</span>
-<span id="cb3-6"><a href="#cb3-6"></a></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="kw">def</span> scrape_diary(user, date, client):</span>
-<span id="cb3-8"><a href="#cb3-8"></a>    url <span class="op">=</span> <span class="ss">f"https://www.myfitnesspal.com/food/diary/</span><span class="sc">{</span>user<span class="sc">}</span><span class="ss">?date=</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>    res <span class="op">=</span> client.get(url)</span>
-<span id="cb3-10"><a href="#cb3-10"></a>    <span class="cf">return</span> res.text</span>
-<span id="cb3-11"><a href="#cb3-11"></a>diaries <span class="op">=</span>[]</span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="cf">for</span> date <span class="kw">in</span> dates:</span>
-<span id="cb3-13"><a href="#cb3-13"></a>    diaries.append(scrape_diary(<span class="st">"ismailmo"</span>, date, sesh))</span>
-<span id="cb3-14"><a href="#cb3-14"></a></span>
-<span id="cb3-15"><a href="#cb3-15"></a>kcals <span class="op">=</span> []</span>
-<span id="cb3-16"><a href="#cb3-16"></a><span class="cf">for</span> diary <span class="kw">in</span> diaries:</span>
-<span id="cb3-17"><a href="#cb3-17"></a>    kcals.append(pd.read_html(diary, flavor<span class="op">=</span><span class="st">"lxml"</span>)[<span class="dv">0</span>].iloc[<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>])</span>
-<span id="cb3-18"><a href="#cb3-18"></a></span>
-<span id="cb3-19"><a href="#cb3-19"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start_time</span>
-<span id="cb3-20"><a href="#cb3-20"></a></span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="bu">print</span>(<span class="ss">f"time to scrape data: </span><span class="sc">{</span>elapsed<span class="sc">:.2f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>start_time <span class="op">=</span> time.perf_counter()</span>
+<span id="cb3-2"><a href="#cb3-2"></a>sesh <span class="op">=</span> requests.Session()</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>diaries <span class="op">=</span>[]</span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="cf">for</span> date <span class="kw">in</span> dates:</span>
+<span id="cb3-7"><a href="#cb3-7"></a>    diaries.append(scrape_diary(<span class="st">"ismailmo"</span>, date, sesh))</span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co"># grab total calories so we can compare with async example later</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>kcals <span class="op">=</span> []</span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="cf">for</span> diary <span class="kw">in</span> diaries:</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    kcals.append(pd.read_html(diary, flavor<span class="op">=</span><span class="st">"lxml"</span>)[<span class="dv">0</span>].iloc[<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>])</span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start_time</span>
+<span id="cb3-15"><a href="#cb3-15"></a></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="bu">print</span>(<span class="ss">f"Time to scrape data: </span><span class="sc">{</span>elapsed<span class="sc">:.2f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time to scrape data: 4.34 seconds</code></pre>
 </div>
+</div>
+<p>This is pretty slow with just a weeks worth of data! Given that this app is supposed to be inspired by Spotify Wrapped - we would expect users to scrape a whole years worth of food diaries. The time to scrape will scale linearly with the number of diaries, so the time to scrape a years worth of data will be ~52x longer than above! And that’s assuming our app doesn’t timeout on long request/response cycles. (<a href="https://github.com/ismailmo1/mfp-wrapped/pull/7">spoiler alert - it does and it did</a>)</p>
+</section>
+<section id="speeding-up-with-httpx-and-async" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Speeding up with httpx and async</h1>
+<p>It seems pretty inefficient to only send one request at a time and just wait around until we get a response before sending another request - and that’s where using async python shines. It doesn’t speed up your code magically, but in scenarios like this where we are I/O bound and waiting for a response it makes a dramatic difference to the performance.</p>
+<p>We’ll need to use a http client that has an async API so we import an async client from <code>httpx</code> to make our requests:</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="im">from</span> httpx <span class="im">import</span> AsyncClient</span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a>start_time <span class="op">=</span> time.perf_counter()</span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a>async_client <span class="op">=</span> AsyncClient()</span>
-<span id="cb4-6"><a href="#cb4-6"></a>date_param <span class="op">=</span> <span class="st">"2022-11-29"</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>user <span class="op">=</span> <span class="st">"ismailmo"</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="cf">async</span> <span class="kw">def</span> async_scrape_diary(user, date, client):</span>
-<span id="cb4-10"><a href="#cb4-10"></a>    url <span class="op">=</span> <span class="ss">f"https://www.myfitnesspal.com/food/diary/</span><span class="sc">{</span>user<span class="sc">}</span><span class="ss">?date=</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>    res <span class="op">=</span> <span class="cf">await</span> client.get(url)</span>
-<span id="cb4-12"><a href="#cb4-12"></a>    <span class="cf">return</span> date, res.text</span>
-<span id="cb4-13"><a href="#cb4-13"></a>coros <span class="op">=</span> []</span>
-<span id="cb4-14"><a href="#cb4-14"></a>async_diaries <span class="op">=</span>[]</span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="cf">for</span> date <span class="kw">in</span> dates:</span>
-<span id="cb4-16"><a href="#cb4-16"></a>    coros.append(async_scrape_diary(<span class="st">"ismailmo"</span>, date, async_client))</span>
-<span id="cb4-17"><a href="#cb4-17"></a></span>
-<span id="cb4-18"><a href="#cb4-18"></a>async_diaries <span class="op">=</span> <span class="cf">await</span> asyncio.gather(<span class="op">*</span>coros)</span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-20"><a href="#cb4-20"></a>async_kcals <span class="op">=</span> []</span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="cf">for</span> date, diary <span class="kw">in</span> async_diaries:</span>
-<span id="cb4-22"><a href="#cb4-22"></a>    async_kcals.append(pd.read_html(diary, flavor<span class="op">=</span><span class="st">"lxml"</span>)[<span class="dv">0</span>].iloc[<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>])</span>
-<span id="cb4-23"><a href="#cb4-23"></a></span>
-<span id="cb4-24"><a href="#cb4-24"></a>async_elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start_time</span>
-<span id="cb4-25"><a href="#cb4-25"></a></span>
-<span id="cb4-26"><a href="#cb4-26"></a><span class="bu">print</span>(<span class="ss">f"time to scrape data: </span><span class="sc">{</span>async_elapsed<span class="sc">:.2f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">from</span> httpx <span class="im">import</span> AsyncClient</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="im">import</span> asyncio </span>
+<span id="cb5-3"><a href="#cb5-3"></a>async_client <span class="op">=</span> AsyncClient()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">print</span>(<span class="ss">f"Speed up of </span><span class="sc">{</span>((elapsed <span class="op">-</span> async_elapsed)<span class="op">/</span> elapsed) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.2f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="cf">async</span> <span class="kw">def</span> async_scrape_diary(user, date, client):</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    url <span class="op">=</span> <span class="ss">f"https://www.myfitnesspal.com/food/diary/</span><span class="sc">{</span>user<span class="sc">}</span><span class="ss">?date=</span><span class="sc">{</span>date<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>    res <span class="op">=</span> <span class="cf">await</span> client.get(url)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="cf">return</span> date, res.text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>This is a huge increase in speed and it’s more significant as the size of the date range is greater (more pages scraped and more requests made), lets make sure the data we get back is the same:</p>
+<p>There are few changes we’ve made to the previous code. Firstly we need to define the function with <code>async def</code> so we can use <code>await</code>, this returns control back to the event loop so we can start making our other requests while we wait for the response.</p>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>async_kcals <span class="op">==</span> kcals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>start_time <span class="op">=</span> time.perf_counter()</span>
+<span id="cb7-2"><a href="#cb7-2"></a>user <span class="op">=</span> <span class="st">"ismailmo"</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>scraping_coroutines <span class="op">=</span> []</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="cf">for</span> date <span class="kw">in</span> dates:</span>
+<span id="cb7-6"><a href="#cb7-6"></a>    scraping_coroutines.append(async_scrape_diary(<span class="st">"ismailmo"</span>, date, async_client))</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a>async_diaries <span class="op">=</span> <span class="cf">await</span> asyncio.gather(<span class="op">*</span>scraping_coroutines)</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co"># for comparison with non-async version above</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>async_kcals <span class="op">=</span> []</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="cf">for</span> date, diary <span class="kw">in</span> async_diaries:</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    async_kcals.append(pd.read_html(diary, flavor<span class="op">=</span><span class="st">"lxml"</span>)[<span class="dv">0</span>].iloc[<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>])</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a>async_elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start_time</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="bu">print</span>(<span class="ss">f"Time to scrape data with async: </span><span class="sc">{</span>async_elapsed<span class="sc">:.2f}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time to scrape data with async: 0.84 seconds</code></pre>
 </div>
+</div>
+<p>On initial glance it may seem as though we are doing the same as above: looping over each date and scraping the diary, however since we are using the async function we do not wait for the response before continuing execution of the next iteration in the loop. You can see this in <code>ln6</code> where we receive a coroutine as a return value which we add to the list of <code>scraping_coroutines</code>. We can then wait for all of these requests to finish by using <code>asyncio.gather</code> and pass it the list of coroutines (one for each diary date).</p>
+<p>Lets do a quick sense check to make sure we got the same data back:</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>async_kcals <span class="op">==</span> kcals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>True</code></pre>
+</div>
+</div>
+<p>The percentage increase in speed between the async and non async method:</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="bu">print</span>(<span class="ss">f"Speed up of </span><span class="sc">{</span>((elapsed <span class="op">-</span> async_elapsed)<span class="op">/</span> elapsed) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.2f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Speed up of 80.62%</code></pre>
+</div>
+</div>
+<p>For just one week’s worth of data we get a dramatic speedup but it becomes more significant as the size of the date range is greater (more pages scraped and more requests made).</p>
+<div class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="8dbbaec2-2a04-40cd-8b49-6071881be0e1" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("8dbbaec2-2a04-40cd-8b49-6071881be0e1")) {                    Plotly.newPlot(                        "8dbbaec2-2a04-40cd-8b49-6071881be0e1",                        [{"hovertemplate":"method=sync<br># total requests=%{x}<br>total request time (s)=%{y}<extra></extra>","legendgroup":"sync","line":{"color":"#636efa","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"sync","orientation":"v","showlegend":true,"x":["0","5","10","15","20","25","30","35","40","45","50","55","60","65","70","75","80","85","90","95","100"],"xaxis":"x","y":[0.5477964729998348,2.4693872190000548,4.623383852998813,5.426651939998919,8.164575239999976,8.136535183000888,10.100173463000829,12.09023146599975,14.27178434400048,16.98880421099966,19.462008814,21.12285269499989,20.089044244999968,20.59047791400008,24.2597816030011,24.36774897000032,26.8349073240006,31.671579120000388,30.526186626999333,42.71461561500109,40.14387175299999],"yaxis":"y","type":"scatter"},{"hovertemplate":"method=async<br># total requests=%{x}<br>total request time (s)=%{y}<extra></extra>","legendgroup":"async","line":{"color":"#EF553B","dash":"solid"},"marker":{"symbol":"circle"},"mode":"lines","name":"async","orientation":"v","showlegend":true,"x":["0","5","10","15","20","25","30","35","40","45","50","55","60","65","70","75","80","85","90","95","100"],"xaxis":"x","y":[0.568595959999584,0.786536478999551,0.926539263999075,0.8297357550000015,0.9973140940001032,1.0374287079994249,0.9792270079997252,1.96904571900086,1.7973854930005473,1.388433509999231,1.8397780989998864,1.8371492579990445,1.8055933599989655,1.6859965069997995,2.0000865959991643,1.5823819229990477,2.430372316001012,1.8298038020002425,2.544899897000505,2.877056862000245,2.8767239349999727],"yaxis":"y","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"# total requests"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"total request time (s)"}},"legend":{"title":{"text":"method"},"tracegroupgap":0},"title":{"text":"Sync vs Async request performance"}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('8dbbaec2-2a04-40cd-8b49-6071881be0e1');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+</section>
+<section id="integrating-with-streamlit" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Integrating with Streamlit</h1>
+<p>Learning and applying async was fun in itself but ultimate goal for this optimisation is a better user experience, so the final steps are to incorporate this change into our <a href="https://wrapped.ismailmo.com">app</a>. Thanks to Streamlit, this is actually pretty easy. We just have to refactor our scraping function, using the principles above, and then run our app in an async loop, you can see all the changes made to go from sync -&gt; async in this <a href="https://github.com/ismailmo1/mfp-wrapped/pull/2/files">pull request</a>.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># main.py (entry point for streamlit app)</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="cf">async</span> <span class="kw">def</span> main():</span>
+<span id="cb13-4"><a href="#cb13-4"></a>    <span class="co"># put your streamlit app setup here</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>    <span class="co"># e.g set</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a>    ...</span>
+<span id="cb13-7"><a href="#cb13-7"></a>    st.set_page_config(</span>
+<span id="cb13-8"><a href="#cb13-8"></a>        ...</span>
+<span id="cb13-9"><a href="#cb13-9"></a>    )</span>
+<span id="cb13-10"><a href="#cb13-10"></a></span>
+<span id="cb13-11"><a href="#cb13-11"></a>    <span class="co"># add in other UI elements here e.g. title, input data etc</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a>    diary_df <span class="op">=</span> <span class="cf">await</span> get_diary_for_range(start_date, end_date, mfp_user)</span>
+<span id="cb13-14"><a href="#cb13-14"></a> </span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb13-16"><a href="#cb13-16"></a>    asyncio.run(main())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And that’s it! Since Streamlit just runs the <code>main.py</code> file from top to bottom on each render, this keeps things pretty simple and we can just use asyncio like you would in any other python application or script.</p>
 
 
 
+</section>
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
