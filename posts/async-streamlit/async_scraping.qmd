@@ -9,7 +9,7 @@ categories:
   - web-scraping
 execute:
   eval: true
-image: pytest_sql.png
+image: asyncio_chart.png
 format:
     html:
         toc: true
@@ -56,7 +56,6 @@ def scrape_diary(user, date, client):
 
 And then scrape the diaries by looping over each date:
 ```{python}
-
 start_time = time.perf_counter()
 sesh = requests.Session()
 
@@ -94,7 +93,7 @@ async def async_scrape_diary(user, date, client):
     res = await client.get(url)
     return date, res.text
 ```
-There are few changes we've made to the previous code, firstly we need to define the function with `async def` so we can use `await` which will return control back to the event loop so we can continue making our other request while we wait for the response.
+There are few changes we've made to the previous code. Firstly we need to define the function with `async def` so we can use `await`, this returns control back to the event loop so we can start making our other requests while we wait for the response.
 
 ```{python}
 start_time = time.perf_counter()
@@ -116,7 +115,7 @@ async_elapsed = time.perf_counter() - start_time
 print(f"Time to scrape data with async: {async_elapsed:.2f} seconds")
 ```
 
-On initial glance it may seem as though we are doing the same as above: looping over each date and scraping the diary, however since we are using the async function we do not wait for the response before continuing execution of the next iteration in the loop. That is in `ln6` we receive a coroutine as a return which we add to the list of `scraping_coroutines`. We can then wait for all of these requests to finish by using `asyncio.gather` and pass it the list of coroutines (one for each diary date).
+On initial glance it may seem as though we are doing the same as above: looping over each date and scraping the diary, however since we are using the async function we do not wait for the response before continuing execution of the next iteration in the loop. You can see this in `ln6` where we receive a coroutine as a return value which we add to the list of `scraping_coroutines`. We can then wait for all of these requests to finish by using `asyncio.gather` and pass it the list of coroutines (one for each diary date).
 
 Lets do a quick sense check to make sure we got the same data back:
 
@@ -161,10 +160,50 @@ for num_dates in range(0,101, 5):
     sync_times[num_dates] = sync_elapsed
 ```
 ```{python}
-#| eval: false
 #| echo: false
-#TODO create line graph of num_requests vs run time
-sync_times_df = pd.read_csv("sync_times.csv")
-async_times_df = pd.read_csv("async_times.csv")
+import pandas as pd
+import plotly.express as px
+sync_times_df = pd.read_csv("sync_times.csv", index_col=0).transpose()
+async_times_df = pd.read_csv("async_times.csv", index_col=0).transpose()
+
+sync_times_df['method'] = 'sync'
+async_times_df['method'] = 'async'
+
+comparison_df = pd.concat([sync_times_df, async_times_df]).reset_index()
+
+comparison_df = comparison_df.rename(
+    {"index":"# total requests",0:"total request time (s)"},
+    axis=1
+    )
+fig = px.line(comparison_df, 
+        x='# total requests', 
+        y='total request time (s)',
+        title='Sync vs Async request performance',
+        color='method'
+        )
+fig.show()
 ```
 
+# Integrating with Streamlit
+
+Learning and applying async was fun in itself but ultimate goal for this optimisation is a better user experience, so the final steps are to incorporate this change into our [app](https://wrapped.ismailmo.com). Thanks to Streamlit, this is actually pretty easy. We just have to refactor our scraping function using the principles above, and then run our app in an async loop. You can see all the changes I made to go from sync to async in this [pull request](https://github.com/ismailmo1/mfp-wrapped/pull/2/files).
+
+```{python}
+#| eval: false
+
+# main.py (entry point for streamlit app)
+
+async def main():
+    # put your streamlit app setup here
+    st.set_page_config(
+        ...
+    )
+    # add in other UI elements here e.g. title, input data etc
+    diary_df = await get_diary_for_range(start_date, end_date, mfp_user)
+    # use the diary_df to analyse, plot and visualise the data
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+And that's it! Since Streamlit just runs the `main.py` file from top to bottom on each render, this keeps things pretty simple and we can just use asyncio like you would in any other python application or script.
