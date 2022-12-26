@@ -1,0 +1,225 @@
+---
+title: World Cup 2022 Fatigue
+description: Assessing the impact of the World Cup on the Premier League
+date: 12-27-2022
+categories:
+  - python
+  - pandas
+  - matplotlib
+  - data-viz
+  - football
+  - world cup
+image: worldcup.png
+format:
+    html:
+        toc: true
+        toc-location: left
+        number-sections: true
+        code-line-numbers: true
+jupyter: python3
+---
+
+![The chosen plot to visualise World Cup impact](./barh_plot.png)
+
+The 2022 World Cup in Qatar was the first to be held during the winter months in the Premier League to avoid the intense heat of the Middle Eastern summer, so the Premier League season was put on hold accomodate for this. With only a week break between the end of the World Cup and the restart of the Premier League, it's clear that some players and clubs will be impacted more than others, depending on how many games they played during the international tournament. 
+
+This post aims to explore the impact of the World Cup on the Premier League.
+
+# Data Sources
+
+In a [previous post](../CL19-strangers/avail-heatmaps.ipynb) exploring the strange fact about the 2019 Champions League Final, [transfermarkt](https://www.transfermarkt.com) was used as the data source by scraping webpages for players and teams. The same data source and libraries will be used here, but some changes are necessary to ensure we get the right level of granularity to ensure we canextract insights at the right level.
+
+You can check out the transfermarkt scraping code [here.](https://www.github.com/ismailmo1/football-data-viz)
+
+# Extracting World Cup data
+
+The key data for this analysis lies within transfermarkt's pages for the games played during the World Cup. Our previous scraping functionality was designed to only extract player availability which was calculated from minutes played (amongst other thing) so we'll need to tweak some of the scraping code so we can get the minutes played for each game.
+
+
+```{python}
+#| eval: false
+
+import pandas as pd 
+from transfermarket import leagues, players, teams
+
+
+def get_match_data(player_url: str, season: str) -> pd.DataFrame:
+    player_url = player_url + f"/plus/1?saison={season}"
+    # get name out of url
+
+    # stats for injuries are on different page to profile
+    player_url = player_url.replace("profil", "leistungsdatendetails")
+
+    tm_res = requests.get(url=player_url, headers=headers)
+
+    dfs = pd.read_html(tm_res.text)
+    match_dfs = []
+    for idx, df in enumerate(dfs):
+        if "Matchday" in df.columns:
+            match_dfs.append(df)
+    try:
+        all_matches = pd.concat(match_dfs)
+    except ValueError:
+        print(f"no match data found for {player_url}")
+        return
+    # remove footer row
+    all_matches = all_matches.loc[
+        all_matches.iloc[:, 0].apply(
+            lambda x: "Squad" not in str(x)
+        )  
+    ]
+    all_matches["Date"] = pd.to_datetime(all_matches["Date"], errors="coerce")
+
+    # last column is minutes played
+    all_matches["min_played"] = all_matches.iloc[:, 16].fillna(0)
+    # check if player used as sub
+    all_matches["subbed_off"] = all_matches.iloc[:, 15]
+    all_matches["subbed_on"] = all_matches.iloc[:, 14]
+
+    all_matches = all_matches.loc[
+        :,
+        [
+            "Date",
+            "Matchday",
+            "Home team.1",
+            "Away team.1",
+            "Result",
+            "min_played",
+            "subbed_on",
+            "subbed_off",
+        ],
+    ]
+
+    return all_matches
+
+def get_minutes_played(match_data: pd.DataFrame) -> pd.DataFrame:
+    def get_min_played(min_played: str) -> int:
+        minutes_split = str(min_played).split("'")
+        if len(minutes_split) < 2:
+            return 0
+        else:
+            return int(minutes_split[0])
+
+    match_data["min_played"] = match_data["min_played"].apply(get_min_played)
+
+    return match_data
+
+```
+First we grab all match data for a player, and then this can be passed to `get_minutes_played` to cleanup the minutes played column. Unfortunately the data for each player is on a seperate page, so to aggregate data for a club, we have to call this function for each player in the team.
+
+```{python}
+from datetime import datetime
+import pandas as pd
+#| eval: false
+
+def get_world_cup_minutes(
+        team_url:str, 
+        world_cup_start = datetime(2022,11,20),
+        world_cup_end = datetime(2022,12,18)
+    )-> pd.DataFrame:
+
+    team_players = teams.get_players(team_url)
+    # build url of player to scrape data from
+    team_player_urls = {player:"https://www.transfermarkt.com" + url for player,url in team_players.items()}
+
+    # grab all player's matches
+    team_minutes_played = []
+    
+    for player,url in team_player_urls.items():
+        print("grabbing data for: " + player)
+        match_data = players.get_match_data(url,world_cup_year)
+        # possibility of player not playing any games 
+        if match_data is None:
+            continue
+        min_played = players.get_minutes_played(match_data)
+        # add player_name column so we can identify rows when we concatenate
+        min_played['player_name'] = player
+        team_minutes_played.append(min_played)
+
+    all_minutes_played= pd.concat(team_minutes_played)
+
+    
+
+    world_cup_minutes = all_minutes_played.loc[all_minutes_played['Date'].between(world_cup_start, world_cup_end)]
+
+    return world_cup_minutes
+```
+
+Since we will be scraping data for each team, `get_world_cup_minutes` helps us combine the steps required for each team that we'll be scraping data for. 
+
+```{python}
+#| eval: false
+# for some reason transfr market lists world cup on 2021 page
+world_cup_year= "2021"
+
+# get 2022 premier league clubs
+prem_clubs_22 = leagues.get_prem_club_list(season="2022")
+
+prem_world_cup_minutes = {}
+
+for club,url in prem_clubs_22.items():
+    team_minutes = get_world_cup_minutes(url)
+    prem_world_cup_minutes[club] = team_minutes
+    # add club name so we can identify rows by club when we concatenate rows
+    team_minutes["club"] = club
+
+prem_world_cup_minutes_df = pd.concat(prem_world_cup_minutes.values())
+```
+
+Finally we have our complete dataset that we can play around with!
+```{python}
+#| echo: false
+import pandas as pd
+prem_world_cup_minutes_df = pd.read_csv("prem_world_cup_22.csv", index_col=0)
+```
+```{python}
+prem_world_cup_minutes_df.sample(5)
+```
+# Data processing
+Since the data is normalised, we can run some sense checks to ensure the data is what we expect. 
+```{python}
+prem_world_cup_minutes_df['player_name'].value_counts()
+```
+Digne (France) and Kovacic (Croatia) played all games in the World Cup since they got to the final and third place playoff, and unfortunately for Billing (Denmark) and Bella-Kotchap (Germany), their teams were knocked out at the group stage.
+
+## Adding country name
+The data doesn't contain the name of the country, although we can get this data by scraping more webpages it isn't ideal since we have to make more requests which is slow and writing more code to scrape this data isn't ideal. 
+
+We do have the data for each game played by the player, so a hacky way to get the team name is to calculate the mode of the teams in the subset of data for that player. I.e. for Lucas Digne (France), here are all the games played by him:
+
+```{python}
+prem_world_cup_minutes_df[prem_world_cup_minutes_df['player_name'] =="Lucas Digne"]
+```
+We can see that France show up the most in the `Home team.1` and `Away team.1` columns, so we can use this to calculate which team he plays for.
+
+```{python}
+prem_world_cup_minutes_df[prem_world_cup_minutes_df['player_name'] =="Lucas Digne"][['Home team.1', 'Away team.1']].values
+```
+Since the team names are spread across two columns, we first convert this into a 2D `numpy.array` 
+
+```{python}
+teams = prem_world_cup_minutes_df[
+    prem_world_cup_minutes_df['player_name'] =="Lucas Digne"
+    ][
+        ['Home team.1', 'Away team.1']
+        ].values.flatten()
+teams
+```
+And then flatten it so its a 1D array (like a list) and we can calculate the mode
+
+```{python}
+pd.DataFrame(teams).mode().iloc[0,0]
+```
+
+We can applying this to the full dataset with `DataFrame.apply` and then merge it with the original dataset so we have an extra `country` column.
+
+```{python}
+player_countries = prem_world_cup_minutes_df.groupby("player_name").apply(lambda df: pd.DataFrame(df[['Home team.1', 'Away team.1']].values.flatten()).mode())
+player_countries = player_countries.reset_index().drop("level_1", axis=1).rename({0:'country'}, axis=1)
+prem_world_cup_minutes_df = prem_world_cup_minutes_df.merge(player_countries, how='left', left_on="player_name", right_on="player_name")
+prem_world_cup_minutes_df.head()
+```
+
+# Visualisation
+
+## Grouping by country
