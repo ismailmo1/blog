@@ -16,11 +16,13 @@ format:
         toc-location: left
         number-sections: true
         code-line-numbers: true
+        fig-width: 7
+        fig-height: 5
 jupyter: python3
 ---
-
-![The chosen plot to visualise World Cup impact](./barh_plot.png)
-
+::: {.column-screen}
+![The final product](./barh_plot.png)
+:::
 The 2022 World Cup in Qatar was the first to be held during the winter months in the Premier League to avoid the intense heat of the Middle Eastern summer, so the Premier League season was put on hold accomodate for this. With only a week break between the end of the World Cup and the restart of the Premier League, it's clear that some players and clubs will be impacted more than others, depending on how many games they played during the international tournament. 
 
 This post aims to explore the impact of the World Cup on the Premier League.
@@ -29,88 +31,23 @@ This post aims to explore the impact of the World Cup on the Premier League.
 
 In a [previous post](../CL19-strangers/avail-heatmaps.ipynb) exploring the strange fact about the 2019 Champions League Final, [transfermarkt](https://www.transfermarkt.com) was used as the data source by scraping webpages for players and teams. The same data source and libraries will be used here, but some changes are necessary to ensure we get the right level of granularity to ensure we canextract insights at the right level.
 
-You can check out the transfermarkt scraping code [here.](https://www.github.com/ismailmo1/football-data-viz)
+You can check out the transfermarkt scraping code [here](https://www.github.com/ismailmo1/football-data-viz).
 
 # Extracting World Cup data
 
-The key data for this analysis lies within transfermarkt's pages for the games played during the World Cup. Our previous scraping functionality was designed to only extract player availability which was calculated from minutes played (amongst other thing) so we'll need to tweak some of the scraping code so we can get the minutes played for each game.
+The key data for this analysis lies within transfermarkt's pages for the games played during the World Cup. Our previous scraping functionality was designed to only extract player availability so we'll need to tweak some of the scraping code so we can get the minutes played for each game.
 
+You can view the changes made in the commit [on github](https://github.com/ismailmo1/football-data-viz/commit/27f58d4597653919c64f6db6895bbf34279822f7).
+
+
+Once we have a list of all matches played by a player, we need to extract the minutes played. Unfortunately the data for each player is on a seperate page, so to aggregate data for a club, we have to make a request for each one.
 
 ```{python}
 #| eval: false
-
-import pandas as pd 
-from transfermarket import leagues, players, teams
-
-
-def get_match_data(player_url: str, season: str) -> pd.DataFrame:
-    player_url = player_url + f"/plus/1?saison={season}"
-    # get name out of url
-
-    # stats for injuries are on different page to profile
-    player_url = player_url.replace("profil", "leistungsdatendetails")
-
-    tm_res = requests.get(url=player_url, headers=headers)
-
-    dfs = pd.read_html(tm_res.text)
-    match_dfs = []
-    for idx, df in enumerate(dfs):
-        if "Matchday" in df.columns:
-            match_dfs.append(df)
-    try:
-        all_matches = pd.concat(match_dfs)
-    except ValueError:
-        print(f"no match data found for {player_url}")
-        return
-    # remove footer row
-    all_matches = all_matches.loc[
-        all_matches.iloc[:, 0].apply(
-            lambda x: "Squad" not in str(x)
-        )  
-    ]
-    all_matches["Date"] = pd.to_datetime(all_matches["Date"], errors="coerce")
-
-    # last column is minutes played
-    all_matches["min_played"] = all_matches.iloc[:, 16].fillna(0)
-    # check if player used as sub
-    all_matches["subbed_off"] = all_matches.iloc[:, 15]
-    all_matches["subbed_on"] = all_matches.iloc[:, 14]
-
-    all_matches = all_matches.loc[
-        :,
-        [
-            "Date",
-            "Matchday",
-            "Home team.1",
-            "Away team.1",
-            "Result",
-            "min_played",
-            "subbed_on",
-            "subbed_off",
-        ],
-    ]
-
-    return all_matches
-
-def get_minutes_played(match_data: pd.DataFrame) -> pd.DataFrame:
-    def get_min_played(min_played: str) -> int:
-        minutes_split = str(min_played).split("'")
-        if len(minutes_split) < 2:
-            return 0
-        else:
-            return int(minutes_split[0])
-
-    match_data["min_played"] = match_data["min_played"].apply(get_min_played)
-
-    return match_data
-
-```
-First we grab all match data for a player, and then this can be passed to `get_minutes_played` to cleanup the minutes played column. Unfortunately the data for each player is on a seperate page, so to aggregate data for a club, we have to call this function for each player in the team.
-
-```{python}
+#| code-fold: true
+#| code-summary: Scraping world cup minutes data
 from datetime import datetime
 import pandas as pd
-#| eval: false
 
 def get_world_cup_minutes(
         team_url:str, 
@@ -145,7 +82,7 @@ def get_world_cup_minutes(
     return world_cup_minutes
 ```
 
-Since we will be scraping data for each team, `get_world_cup_minutes` helps us combine the steps required for each team that we'll be scraping data for. 
+We can now use this function to extract data for each Premier league team: 
 
 ```{python}
 #| eval: false
@@ -176,14 +113,14 @@ prem_world_cup_minutes_df = pd.read_csv("prem_world_cup_22.csv", index_col=0)
 prem_world_cup_minutes_df.sample(5)
 ```
 # Data processing
-Since the data is normalised, we can run some sense checks to ensure the data is what we expect. 
+Now that the data is normalised, we can run some sense checks to ensure the data is what we expect. 
 ```{python}
 prem_world_cup_minutes_df['player_name'].value_counts()
 ```
-Digne (France) and Kovacic (Croatia) played all games in the World Cup since they got to the final and third place playoff, and unfortunately for Billing (Denmark) and Bella-Kotchap (Germany), their teams were knocked out at the group stage.
+This passes the eye test: Digne (France) and Kovacic (Croatia) both played all games in the World Cup since they got to the final and third place playoff, and unfortunately for Billing (Denmark) and Bella-Kotchap (Germany), their teams were knocked out at the group stage after playing only 3 games.
 
 ## Adding country name
-The data doesn't contain the name of the country, although we can get this data by scraping more webpages it isn't ideal since we have to make more requests which is slow and writing more code to scrape this data isn't ideal. 
+The data doesn't contain the name of the country, although we can get this data by scraping more webpages it isn't ideal since we have to make more requests which is slow and writing more code to scrape this data isn't fun or productive. 
 
 We do have the data for each game played by the player, so a hacky way to get the team name is to calculate the mode of the teams in the subset of data for that player. I.e. for Lucas Digne (France), here are all the games played by him:
 
@@ -222,4 +159,145 @@ prem_world_cup_minutes_df.head()
 
 # Visualisation
 
+The aim of this visualisation was to assess the impact on various premier league teams, so we can start by aggregating by club and just adding up all the minutes.
+
+```{python}
+club_minutes = prem_world_cup_minutes_df.groupby(['club']).sum(numeric_only=True)
+_ = club_minutes.plot(kind='barh')
+```
+
+This plot seems a bit bare, and it misses context around the distribution of the minutes amongst the squad. For example, Bournemouth seems to have comparable minutes played with Brentford, but Bournemouth were represented by just one player (Phillip Billing of Denmark) vs Brentford who had 4 different players at the World Cup. You could argue the impact to Brentford is greater since Bournemouth can just rest Billing for a game or two, whereas resting 5 players is a taller order for Brentford. 
+
 ## Grouping by country
+
+```{python}
+#|echo: false
+#| column: page
+
+grouped_wc22_minutes =prem_world_cup_minutes_df.groupby(['club', "country"]).sum(numeric_only=True)
+df = grouped_wc22_minutes.unstack()
+df = df.droplevel(level=0,axis=1)
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams['font.size'] = '10'
+
+fig, ax = plt.subplots(figsize=(10,5))
+
+df.plot(kind="barh", stacked=True, ax=ax, )
+
+ax.legend(loc='upper right',bbox_to_anchor=(1.15, 1.1), frameon=False )
+
+ax.set_title("World Cup 2022 Fatigue in the Premier League")
+ax.set_xlabel("world cup minutes played")
+ax.set_ylabel("")
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+```
+
+This seems to be committing the sin of way too much data in one plot, there aren't enough colours to differentiate between the countries, even if we could - the country name isn't particularly meaningful.
+
+## Grouping by tournament progression
+
+A more meaninful representation is to group together contries that made it to the same stages of the tournament. The progression through the world cup rounds indicates how much rest the players have had and also provideds reasons behind the number of minutes: progressing to later rounds is likely to be the reason behind high number of minutes played.
+
+```{python}
+#|echo: false
+#| column: page
+
+prem_world_cup_minutes_df['Matchday'] = prem_world_cup_minutes_df['Matchday'].str.replace(
+                                        'Group .', 'Group Stage', regex=True)
+grouped_wc22_minutes =prem_world_cup_minutes_df.groupby(['club', "Matchday"]).sum(numeric_only=True)
+df = grouped_wc22_minutes.unstack()
+df = df.droplevel(level=0,axis=1)
+# reorder to match tournament order
+df = df[['Group Stage','Round of 16', 'Quarter-Finals','Semi-Finals',  'Third Place Play-Off', 'Final'  ]]
+
+fig, ax = plt.subplots(figsize=(10,5))
+
+df.plot(kind="barh", stacked=True, ax=ax, )
+
+ax.legend(loc='lower right', bbox_to_anchor=(1, 0.2), frameon=False )
+
+ax.set_title("World Cup 2022 Fatigue in the Premier League")
+ax.set_xlabel("world cup minutes played")
+ax.set_ylabel("")
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+```
+
+## Finishing touches
+Since we are exploring the impact of fatigue from the world cup, it would make sense to order the y axis (premier league teams) by league position since this is likely to be affected following the world cup.
+
+```{python}
+#| warning: false
+#| code-fold: true
+#| code-summary: Adding premier league standings 
+from fuzzywuzzy import process
+prem_standings = pd.read_html("https://www.bbc.co.uk/sport/football/tables")[0]
+prem_standings = prem_standings.iloc[:-1, [0,2]].rename({'Unnamed: 0':'prem_position'}, axis=1).set_index('Team')
+
+# taken from https://stackoverflow.com/a/56315491
+def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=2):
+    """
+    :param df_1: the left table to join
+    :param df_2: the right table to join
+    :param key1: key column of the left table
+    :param key2: key column of the right table
+    :param threshold: how close the matches should be to return a match, based on Levenshtein distance
+    :param limit: the amount of matches that will get returned, these are sorted high to low
+    :return: dataframe with boths keys and matches
+    """
+    s = df_2[key2].tolist()
+    
+    m = df_1[key1].apply(lambda x: process.extract(x, s, limit=limit))    
+    df_1['matches'] = m
+    
+    m2 = df_1['matches'].apply(lambda x: ', '.join([i[0] for i in x if i[1] >= threshold]))
+    df_1['matches'] = m2
+    
+    return df_1
+df = df.reset_index()
+prem_standings = prem_standings.reset_index()
+merged_standings = fuzzy_merge(df, prem_standings, key1='club', key2='Team', threshold=65, limit=1)
+merged_standings.loc[merged_standings['club']=="Manchester United", 'matches'] = 'Man Utd'
+merged_standings = merged_standings.merge(prem_standings, how='left', left_on='matches', right_on='Team').drop(['matches', 'Team'], axis=1)
+merged_standings['prem_position'] = pd.to_numeric(merged_standings['prem_position'])
+merged_standings.sort_values('prem_position', inplace=True, ascending=False)
+
+df = merged_standings.drop("prem_position", axis=1).set_index("club")
+```
+
+We can change the colour scheme so it matches the world cup one, change the fonts, add some spacing and we end up with our final plot:
+```{python}
+#| echo: false
+#| column: screen-inset
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams['font.family'] = 'JetBrains Mono'
+matplotlib.rcParams['font.size'] = '14'
+color_scheme = ['#feebe2','#fcc5c0','#fa9fb5','#f768a1','#c51b8a','#7a0177']
+
+alt_color_scheme = ['#762a83','#af8dc3','#e7d4e8','#d9f0d3','#7fbf7b','#1b7837']
+fig, ax = plt.subplots(figsize=(16,8))
+
+df.plot(kind="barh", stacked=True, ax=ax, color=color_scheme)
+
+ax.tick_params(length=0)
+ax.set_title("World Cup 2022 fatigue in the Premier League", loc="left", pad=15)
+ax.set_xlabel("total minutes played", labelpad=10)
+ax.set_ylabel("")
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+_ = ax.legend(loc='lower right', bbox_to_anchor = (1, 0.2), frameon=False)
+```
