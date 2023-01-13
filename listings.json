@@ -1,12 +1,30 @@
 [
   {
+    "listing": "/index.html",
+    "items": [
+      "/posts/worldcup-fatigue/index.html",
+      "/posts/async-streamlit/async_scraping.html",
+      "/posts/CL19-strangers/avail-heatmaps.html",
+      "/posts/pytest-sql/index.html"
+    ]
+  },
+  {
     "listing": "/about.html",
     "items": [
       "/posts/async-streamlit/async_scraping.html",
       "/index.html",
       "/posts/pytest-sql/index.html",
-      "/posts/CL19-strangers/avail-heatmaps.html"
+      "/posts/CL19-strangers/avail-heatmaps.html",
+      "/posts/worldcup-fatigue/index.html"
     ]
+  },
+  {
+    "listing": "/posts/worldcup-fatigue/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/pytest-sql/index.html",
+    "items": []
   },
   {
     "listing": "/posts/CL19-strangers/avail-heatmaps.html",
@@ -15,17 +33,5 @@
   {
     "listing": "/posts/async-streamlit/async_scraping.html",
     "items": []
-  },
-  {
-    "listing": "/posts/pytest-sql/index.html",
-    "items": []
-  },
-  {
-    "listing": "/index.html",
-    "items": [
-      "/posts/async-streamlit/async_scraping.html",
-      "/posts/CL19-strangers/avail-heatmaps.html",
-      "/posts/pytest-sql/index.html"
-    ]
   }
 ]
