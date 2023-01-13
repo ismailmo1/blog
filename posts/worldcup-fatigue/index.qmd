@@ -20,12 +20,13 @@ format:
         fig-height: 5
 jupyter: python3
 ---
-::: {.column-screen}
-![The final product](./barh_plot.png)
-:::
 The 2022 World Cup in Qatar was the first to be held during the winter months in the Premier League to avoid the intense heat of the Middle Eastern summer, so the Premier League season was put on hold accomodate for this. With only a week break between the end of the World Cup and the restart of the Premier League, it's clear that some players and clubs will be impacted more than others, depending on how many games they played during the international tournament. 
 
 This post aims to explore the impact of the World Cup on the Premier League.
+
+::: {.column-screen}
+![The final product](./barh_plot.png)
+:::
 
 # Data Sources
 
@@ -37,7 +38,7 @@ You can check out the transfermarkt scraping code [here](https://www.github.com/
 
 The key data for this analysis lies within transfermarkt's pages for the games played during the World Cup. Our previous scraping functionality was designed to only extract player availability so we'll need to tweak some of the scraping code so we can get the minutes played for each game.
 
-You can view the changes made in the commit [on github](https://github.com/ismailmo1/football-data-viz/commit/27f58d4597653919c64f6db6895bbf34279822f7).
+You can view the changes made in this [commit on github](https://github.com/ismailmo1/football-data-viz/commit/27f58d4597653919c64f6db6895bbf34279822f7).
 
 
 Once we have a list of all matches played by a player, we need to extract the minutes played. Unfortunately the data for each player is on a seperate page, so to aggregate data for a club, we have to make a request for each one.
@@ -86,7 +87,7 @@ We can now use this function to extract data for each Premier league team:
 
 ```{python}
 #| eval: false
-# for some reason transfr market lists world cup on 2021 page
+# for some reason transfermarkt lists world cup on 2021 page
 world_cup_year= "2021"
 
 # get 2022 premier league clubs
@@ -120,7 +121,7 @@ prem_world_cup_minutes_df['player_name'].value_counts()
 This passes the eye test: Digne (France) and Kovacic (Croatia) both played all games in the World Cup since they got to the final and third place playoff, and unfortunately for Billing (Denmark) and Bella-Kotchap (Germany), their teams were knocked out at the group stage after playing only 3 games.
 
 ## Adding country name
-The data doesn't contain the name of the country, although we can get this data by scraping more webpages it isn't ideal since we have to make more requests which is slow and writing more code to scrape this data isn't fun or productive. 
+This data doesn't currently contain the name of the country, and although we can get this by scraping more webpages, it isn't ideal since we have to make more requests which is slow and writing more code to scrape the responses won't be fun or productive. 
 
 We do have the data for each game played by the player, so a hacky way to get the team name is to calculate the mode of the teams in the subset of data for that player. I.e. for Lucas Digne (France), here are all the games played by him:
 
@@ -197,11 +198,11 @@ ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ```
 
-This seems to be committing the sin of way too much data in one plot, there aren't enough colours to differentiate between the countries, even if we could - the country name isn't particularly meaningful.
+This seems to be committing the sin of way too much data in one plot, there just aren't enough (significantly) different enough colours to differentiate between the countries, and even if we could - it'd be too much to take in for a visualisation.
 
 ## Grouping by tournament progression
 
-A more meaninful representation is to group together contries that made it to the same stages of the tournament. The progression through the world cup rounds indicates how much rest the players have had and also provideds reasons behind the number of minutes: progressing to later rounds is likely to be the reason behind high number of minutes played.
+A more meaningful and accessible visualisation is to group together contries that made it to the same stages of the tournament. The progression through the world cup rounds indicates how much rest the players have had and also provides reasons behind the number of minutes: progressing to later rounds is likely to be the cause behind a higher number of minutes played.
 
 ```{python}
 #|echo: false
@@ -273,7 +274,7 @@ merged_standings.sort_values('prem_position', inplace=True, ascending=False)
 df = merged_standings.drop("prem_position", axis=1).set_index("club")
 ```
 
-We can change the colour scheme so it matches the world cup one, change the fonts, add some spacing and we end up with our final plot:
+We can change the colour scheme so it's more accessible (see [colorbrew.org](colorbrew.org)) and somewhat matches the world cup theme, change the fonts, add some spacing and we end up with our final plot:
 ```{python}
 #| echo: false
 #| column: screen-inset
