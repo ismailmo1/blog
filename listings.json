@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/lpool-shot-xg/index.html",
       "/posts/worldcup-fatigue/index.html",
       "/posts/async-streamlit/async_scraping.html",
       "/posts/CL19-strangers/avail-heatmaps.html",
@@ -12,6 +13,7 @@
     "listing": "/about.html",
     "items": [
       "/posts/async-streamlit/async_scraping.html",
+      "/posts/lpool-shot-xg/index.html",
       "/index.html",
       "/posts/pytest-sql/index.html",
       "/posts/CL19-strangers/avail-heatmaps.html",
@@ -20,6 +22,10 @@
   },
   {
     "listing": "/posts/worldcup-fatigue/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/lpool-shot-xg/index.html",
     "items": []
   },
   {
