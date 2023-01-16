@@ -172,7 +172,7 @@ ax.legend(handles = [
                         markersize=15),
                 Line2D([0], [0], color=avg_goal_line_color, label='Avg goal xG', linewidth=4,alpha =0.5,
                         markersize=15),
-                Line2D([0], [0], color=avg_miss_line_color, label='Avg miss xG', linewidth=4,alpha =0.5,
+                Line2D([0], [0], color=avg_miss_line_color, label='Avg non-goal xG', linewidth=4,alpha =0.5,
                         markersize=15)
                     ], 
                     frameon=False, 
@@ -310,7 +310,7 @@ ax.legend(handles = [
                         markersize=15),
                 Line2D([0], [0], color=avg_goal_line_color, label='Avg goal xG', linewidth=4,alpha =0.5,
                         markersize=15),
-                Line2D([0], [0], color=avg_miss_line_color, label='Avg miss xG', linewidth=4,alpha =0.5,
+                Line2D([0], [0], color=avg_miss_line_color, label='Avg non-goal xG', linewidth=4,alpha =0.5,
                         markersize=15)
                     ], 
                     frameon=False, 
