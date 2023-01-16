@@ -16,22 +16,19 @@ format:
         toc-location: left
         number-sections: true
         code-line-numbers: true
-        fig-width: 7
-        fig-height: 5
 jupyter: python3
 execute:
     warning: false
 ---
+Despite his 10 goals in 23 games (at the time of writing), Darwin Nunez's finishing has been questioned by some since he joined Liverpool in the summer of 2022. Some of this criticism is due to the inevitable comparison with Manchester City's summer signing of Erling Haaland who has taken the league by storm with his 27 goals in 24 games so far. 
 
-Since Darwin Nunez joined Liverpool in the summer of 2022 his finishing has been questioned by some, despite his 10 goals in 23 games (at the time of writing). Some of this criticism is likely due to the inevitable comparison with Manchester City's summer signing of Erling Haaland with 27 goals in 24 games so far. However, it feels as though Nunez loses his composure in front of goals with easier chances, but looks calmer with more difficult chances when he isn't expected to score.
-
-To put this "feeling" to the test, we can look at the difficulty of chances that are scored vs ones that are missed with the help of the [expected goals (xG)](https://fbref.com/en/expected-goals-model-explained/) metric.
+It feels as though Nunez loses his composure in front of goals with easier chances but looks calmer with more difficult chances when he isn't expected to score. To put this "feeling" to the test, we can look at the difficulty of chances that are scored vs ones that are missed with the help of the [expected goals (xG)](https://fbref.com/en/expected-goals-model-explained/) metric.
 
 ## Data source
 
 To help make a judgement on the quality of chances missed vs scored, xG data was required at the finest granularity level: each individual shot by a player.  
 
-You can read about how data was scraped from [fbref](fbref.com) while still respecting the API limits [here](blog.ismailmo.com).
+You can read about how data was scraped from [fbref](fbref.com) while still respecting the API limits [here (coming soon!)](blog.ismailmo.com).
 ```{python}
 #| echo: false
 import os
@@ -80,27 +77,83 @@ concat_shots = concat_shots.dropna(axis=0).drop_duplicates()
 concat_shots = concat_shots.assign(is_goal=concat_shots['Outcome']=='Goal')
 
 player_goals = concat_shots[concat_shots['is_goal']]
+player_misses = concat_shots[~concat_shots['is_goal']]
+
 concat_shots.iloc[:, [0,1,2,3, 8]].sample(5)
 ```
 ## Visualising all shots
-Finding a balance between visualising all the individual shot data points and not making the plot too busy was the key goal of this visualisation. By using text annotations in both the y axis and the median lines - I think this is a decent tradeoff. 
+Finding a balance between visualising all the individual shot data points and not making the plot too busy was the key goal of this visualisation. By using text annotations in both the y axis and the mean lines - I think a decent tradeoff was achieved with seaborn's `stripplot`.
+
+This was done fairly manually by looping through the tick labels to get `x,y` positions to place the annotations:
+```{python}
+#| eval: false
+tick_label_order = [label._text for label in ax.get_yticklabels()]
+
+for idx, label in enumerate(tick_label_order):
+        num_shots = len(concat_shots[concat_shots['Player']==label])
+        num_goals = len(player_goals[player_goals['Player']==label])
+        shots_per_goal = num_shots/num_goals
+        ax.annotate(
+            f"shots: {num_shots}\ngoals: {num_goals}\nshots/goal: {shots_per_goal:.2f}", 
+            xy=(-0.05,idx + 0.33), 
+            xycoords='data', 
+            annotation_clip=False, 
+            horizontalalignment='right'
+        )
+
+```
+
+The mean xG lines were added in a similar way, using the `tick_label_order` index to find the corresponding mean values: 
+
+```{python}
+#| eval: false
+
+mean_goal_lines = [
+    (idx,mean_goal_xg[mean_goal_xg['Player']==tick]['xG'].squeeze()) for idx, tick in enumerate(tick_label_order)
+    ]
+# add avg xG lines
+num_y_labels = len(mean_goal_lines)
+
+for y,x in mean_goal_lines:
+    y_loc = 1- (y/num_y_labels)
+    y_width = 1/num_y_labels
+    line_height = 1/(num_y_labels+1)
+
+    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color='#1f77b4', linewidth = 4, alpha=0.5)
+    offset = 10
+    ax.annotate(f"{x:.2f}", (x,y), xytext=(offset/2, 2*offset), textcoords='offset points')
+
+# repeat for mean xg of shots missed
+```
 
 ```{python}
 #| column: screen
 #| echo: false
 
-median_goal_xg = player_goals.groupby('Player').median(numeric_only=True).reset_index()
+mean_goal_xg = player_goals.groupby('Player').mean(numeric_only=True).reset_index()
+mean_miss_xg = player_misses.groupby('Player').mean(numeric_only=True).reset_index()
 
-player_xg_order = median_goal_xg.sort_values('xG')['Player'].to_list()
+player_order = [
+    'Darwin Núñez',
+    'Mohamed Salah',
+    'Roberto Firmino',
+    'Luis Díaz',
+    'Diogo Jota',
+    'Cody Gakpo',
+    ]
 
 import matplotlib
 from matplotlib.lines import Line2D
 matplotlib.rcParams['font.family'] = 'JetBrains Mono'
-fig, ax = plt.subplots(figsize=(20,10))
+fig, ax = plt.subplots(figsize=(18,10))
 
+avg_goal_line_color = "#2c7bb6"
+avg_miss_line_color = "#d7191c"
+goal_spot_color = "#abd9e9"
+miss_spot_color = "#fdae61"
 
-sns.stripplot(concat_shots[concat_shots['is_goal']==False],x= 'xG', y='Player', ax=ax, alpha=0.3, s=10, color='grey', order= player_xg_order)
-sns.stripplot(concat_shots[concat_shots['is_goal']==True],x= 'xG', y='Player', ax=ax, s=10, color='red', order= player_xg_order)
+sns.stripplot(player_misses,x= 'xG', y='Player', ax=ax, alpha=0.3, s=10, color=miss_spot_color, order= player_order)
+sns.stripplot(player_goals,x= 'xG', y='Player', ax=ax, s=10, color=goal_spot_color, order= player_order)
 
 ax.tick_params(length=0)
 ax.set_title("Expected Goals (xG) of shots since 2020/2021*", loc="left", pad=80, fontdict={'size':30})
@@ -113,15 +166,19 @@ ax.spines['left'].set_visible(False)
 
 # 'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right', 'center left', 'center right', 'lower center', 'upper center', 'center'
 ax.legend(handles = [ 
-                Line2D([0], [0], marker='o', color='r', label='Goal', linewidth=0,
+                Line2D([0], [0], marker='o', color=goal_spot_color, label='Goal', linewidth=0,
                         markersize=15),
-                Line2D([0], [0], color='#1f77b4', label='Avg goal xG', linewidth=4,alpha =0.5,
+                 Line2D([0], [0], marker='o', color=miss_spot_color, label='Shot (no goal)', linewidth=0,
+                        markersize=15),
+                Line2D([0], [0], color=avg_goal_line_color, label='Avg goal xG', linewidth=4,alpha =0.5,
+                        markersize=15),
+                Line2D([0], [0], color=avg_miss_line_color, label='Avg miss xG', linewidth=4,alpha =0.5,
                         markersize=15)
                     ], 
                     frameon=False, 
                     fontsize=16, 
                     loc='upper center',
-                    ncol=2,
+                    ncol=4,
                     bbox_to_anchor=(0.5,1.08)
             )
 data_disclaimer = "*xG data is not available for all competitions"
@@ -131,18 +188,30 @@ _ = plt.gcf().text(0.9, -0.02, "data: fbref.com", fontsize=14.25, fontdict={'col
 
 # add avg goal xG line
 tick_label_order = [label._text for label in ax.get_yticklabels()]
-annotation_pos = [(idx,median_goal_xg[median_goal_xg['Player']==tick]['xG'].squeeze()) for idx, tick in enumerate(tick_label_order)]
+goal_annotation_pos = [(idx,mean_goal_xg[mean_goal_xg['Player']==tick]['xG'].squeeze()) for idx, tick in enumerate(tick_label_order)]
 
-num_y_labels = len(annotation_pos)
-for y,x in annotation_pos:
+num_y_labels = len(goal_annotation_pos)
+for y,x in goal_annotation_pos:
     y_loc = 1- (y/num_y_labels)
     y_width = 1/num_y_labels
     line_height = 1/(num_y_labels+1)
 
-    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color='#1f77b4', linewidth = 4, alpha=0.5)
+    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color=avg_goal_line_color, linewidth = 4, alpha=0.5)
     offset = 10
     ax.annotate(f"{x:.2f}", (x,y), xytext=(offset/2, 2*offset), textcoords='offset points')
 
+
+miss_annotation_pos = [(idx,mean_miss_xg[mean_miss_xg['Player']==tick]['xG'].squeeze()) for idx, tick in enumerate(tick_label_order)]
+
+num_y_labels = len(miss_annotation_pos)
+for y,x in miss_annotation_pos:
+    y_loc = 1- (y/num_y_labels)
+    y_width = 1/num_y_labels
+    line_height = 1/(num_y_labels+1)
+
+    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color=avg_miss_line_color, linewidth = 4, alpha=0.5)
+    offset = 10
+    ax.annotate(f"{x:.2f}", (x,y), xytext=(offset/2, 2*offset), textcoords='offset points')
 
 ax.tick_params(axis='y', which='major', labelsize=15)
 ax.xaxis.label.set_fontsize(16)
@@ -166,7 +235,7 @@ First we can add the match data:
 concat_shots = concat_shots.reset_index().rename({'index':'date'}, axis=1)
 concat_shots.sample(5)
 ```
-The plot the data using `plotly.express.stripplot`:
+Then plot the data using `plotly.express.stripplot`:
 ```{python}
 #| echo: false
 #| column: screen
@@ -201,30 +270,31 @@ fig.update_yaxes(title="", tickfont={"size":16} )
 fig.update_xaxes(title_font_size=32)
 fig.for_each_trace(lambda t: t.update({"marker":{"size":10}}))
 ```
-## How about just shots at Liverpool?
+## Is Liverpool is the problem?
+Given Liverpool's run of form this season, and the extra pressure of moving to a new country, there's plenty of cause for Nunez to be fluffing his shots more than usual this season. Now that we have match data, we can easily split the shots at Liverpool and previous clubs:
 ```{python}
 concat_shots['Squad'] = concat_shots['Squad'].apply(lambda x:x.split(" ")[-1])
-lpool_shots = concat_shots[concat_shots['Squad']=='Liverpool']
-lpool_shots.sample(5)
+nunez_shots = concat_shots[concat_shots['Player'] == 'Darwin Núñez']
+#remove uruguay
+nunez_shots.drop(nunez_shots[nunez_shots['Squad'] =='Uruguay'].index, inplace=True)
+nunez_shots.sample(5)
 ```
-
+The sample size for Benfica is a lot larger (60 games at Benfica vs 19 games at Liverpool), but from the plot below we can see that while Nunez's shots/goal is almost double what it was at Benfica - there's no difference in the average xG of the shots he's been missing. The average xG for goals is a lot higher at Benfica suggesting that Nunez is actually scoring more difficult chances at Liverpool - so atleast that part of the initial feeling was true.
 ```{python}
-lpool_goals = lpool_shots[lpool_shots["is_goal"]==True]
-median_goal_xg = lpool_goals.groupby('Player').median(numeric_only=True).reset_index()
+#| column: screen-inset
+# | echo: false
+fig, ax = plt.subplots(figsize=(18,10))
+nunez_goals = nunez_shots[nunez_shots['is_goal']]
+nunez_misses = nunez_shots[~nunez_shots['is_goal']]
 
-player_xg_order = median_goal_xg.sort_values('xG')['Player'].to_list()
+mean_goal_xg = nunez_goals.groupby('Squad').mean(numeric_only=True).reset_index()
+mean_miss_xg = nunez_misses.groupby('Squad').mean(numeric_only=True).reset_index()
 
-import matplotlib
-from matplotlib.lines import Line2D
-matplotlib.rcParams['font.family'] = 'JetBrains Mono'
-fig, ax = plt.subplots(figsize=(20,10))
-
-
-sns.stripplot(lpool_shots[lpool_shots['is_goal']==False],x= 'xG', y='Player', ax=ax, alpha=0.3, s=10, color='grey', order= player_xg_order)
-sns.stripplot(lpool_shots[lpool_shots['is_goal']==True],x= 'xG', y='Player', ax=ax, s=10, color='red', order= player_xg_order)
+sns.stripplot(nunez_misses,x= 'xG', y='Squad', ax=ax, alpha=0.3, s=10, color=miss_spot_color)
+sns.stripplot(nunez_goals,x= 'xG', y='Squad', ax=ax, s=10, color=goal_spot_color)
 
 ax.tick_params(length=0)
-ax.set_title("Expected Goals (xG) of shots since 2020/2021*", loc="left", pad=80, fontdict={'size':30})
+ax.set_title("Expected Goals (xG) of Nunez's shots since 2020/2021*", loc="left", pad=80, fontdict={'size':30})
 ax.set_ylabel("")
 
 ax.spines['top'].set_visible(False)
@@ -234,15 +304,19 @@ ax.spines['left'].set_visible(False)
 
 # 'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right', 'center left', 'center right', 'lower center', 'upper center', 'center'
 ax.legend(handles = [ 
-                Line2D([0], [0], marker='o', color='r', label='Goal', linewidth=0,
+                Line2D([0], [0], marker='o', color=goal_spot_color, label='Goal', linewidth=0,
                         markersize=15),
-                Line2D([0], [0], color='#1f77b4', label='Avg goal xG', linewidth=4,alpha =0.5,
+                 Line2D([0], [0], marker='o', color=miss_spot_color, label='Shot (no goal)', linewidth=0,
+                        markersize=15),
+                Line2D([0], [0], color=avg_goal_line_color, label='Avg goal xG', linewidth=4,alpha =0.5,
+                        markersize=15),
+                Line2D([0], [0], color=avg_miss_line_color, label='Avg miss xG', linewidth=4,alpha =0.5,
                         markersize=15)
                     ], 
                     frameon=False, 
                     fontsize=16, 
                     loc='upper center',
-                    ncol=2,
+                    ncol=4,
                     bbox_to_anchor=(0.5,1.08)
             )
 data_disclaimer = "*xG data is not available for all competitions"
@@ -252,28 +326,75 @@ _ = plt.gcf().text(0.9, -0.02, "data: fbref.com", fontsize=14.25, fontdict={'col
 
 # add avg goal xG line
 tick_label_order = [label._text for label in ax.get_yticklabels()]
-annotation_pos = [(idx,median_goal_xg[median_goal_xg['Player']==tick]['xG'].squeeze()) for idx, tick in enumerate(tick_label_order)]
 
-num_y_labels = len(annotation_pos)
-for y,x in annotation_pos:
+goal_annotation_pos = []
+for idx, tick in enumerate(tick_label_order):
+    mean = mean_goal_xg[mean_goal_xg['Squad']==tick]['xG'].squeeze()
+    if type(mean) == pd.Series:
+        continue
+    goal_annotation_pos.append((idx, mean) )
+
+num_y_labels = len(goal_annotation_pos)
+for y,x in goal_annotation_pos:
     y_loc = 1- (y/num_y_labels)
     y_width = 1/num_y_labels
     line_height = 1/(num_y_labels+1)
 
-    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color='#1f77b4', linewidth = 4, alpha=0.5)
-    offset = 10
+    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color=avg_goal_line_color, linewidth = 4, alpha=0.5)
+    offset = 20
     ax.annotate(f"{x:.2f}", (x,y), xytext=(offset/2, 2*offset), textcoords='offset points')
 
+
+miss_annotation_pos = []
+for idx, tick in enumerate(tick_label_order):
+    mean = mean_miss_xg[mean_miss_xg['Squad']==tick]['xG'].squeeze()
+    if type(mean) == pd.Series:
+        continue
+    miss_annotation_pos.append((idx, mean) )
+
+num_y_labels = len(miss_annotation_pos)
+for y,x in miss_annotation_pos:
+    y_loc = 1- (y/num_y_labels)
+    y_width = 1/num_y_labels
+    line_height = 1/(num_y_labels+1)
+
+    ax.axvline(x,ymin = y_loc-line_height, ymax = y_loc - y_width + line_height, color=avg_miss_line_color, linewidth = 4, alpha=0.5)
+    offset = 20
+    ax.annotate(f"{x:.2f}", (x,y), xytext=(offset/2, 2*offset), textcoords='offset points')
 
 ax.tick_params(axis='y', which='major', labelsize=15)
 ax.xaxis.label.set_fontsize(16)
 
 for idx, label in enumerate(tick_label_order):
-        num_shots = len(lpool_shots[lpool_shots['Player']==label])
-        num_goals = len(lpool_goals[lpool_goals['Player']==label])
-        shots_per_goal = num_shots/num_goals
-        ax.annotate(f"shots: {num_shots}\ngoals: {num_goals}\nshots/goal: {shots_per_goal:.2f}", 
-                xy=(-0.05,idx + 0.33), xycoords='data', annotation_clip=False, horizontalalignment='right')
-
+        try:
+            num_shots = len(nunez_shots[nunez_shots['Squad']==label])
+            num_goals = len(nunez_goals[nunez_goals['Squad']==label])
+            shots_per_goal = num_shots/num_goals
+            ax.annotate(f"shots: {num_shots}\ngoals: {num_goals}\nshots/goal: {shots_per_goal:.2f}", 
+                    xy=(-0.05,idx + 0.2), xycoords='data', annotation_clip=False, horizontalalignment='right')
+        except ZeroDivisionError:
+            continue
 _ = ax.set_yticklabels(ax.get_yticklabels(), va='bottom')
+```
+To test out whether Nunez is actually taking more shots at Liverpool we can just look at the number of shots per game: 
+```{python}
+nunez_lpool_shots = nunez_shots[nunez_shots['Squad']=='Liverpool']
+nunez_benfica_shots = nunez_shots[nunez_shots['Squad']!='Liverpool']
+
+num_lpool_games = len(nunez_lpool_shots['date'].unique())
+num_benfica_games = len(nunez_benfica_shots['date'].unique())
+
+
+print(
+    f"shots/game at Liverpool: {len(nunez_lpool_shots)/num_lpool_games:.2f}\n"
+    f"shots/game at Benfica: {len(nunez_benfica_shots)/num_benfica_games:.2f}"
+)
+```
+And they seem to be lower quality too:
+
+```{python}
+print(
+    f"avg shot xG at Liverpool: {nunez_lpool_shots['xG'].mean():.2f}\n"
+    f"avg shot xG at Benfica: {nunez_benfica_shots['xG'].mean():.2f}"
+)
 ```
