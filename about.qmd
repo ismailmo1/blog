@@ -2,6 +2,7 @@
 title: "About"
 image: me.jpeg
 about:
+  id: hero-heading
   template: jolla
   links:
     - icon: envelope
@@ -15,9 +16,10 @@ about:
       href: https://linkedin.com/in/ismailmo-chem
 
 ---
-
+:::{#hero-heading}
 Hi I'm Ismail, thanks for checking out my blog. I'm currently working as software 
-engineer at Amey and I started writing just so I could get better at writing but 
+engineer at Amey and just started writing so I could get better at writing but 
 if you've stumbled across this somehow, it'd be great to hear from you! 
 
 You can reach out to me through any of the links below:
+:::
