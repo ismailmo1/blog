@@ -1,4 +1,4 @@
-# [https://blog.ismailmo.com](blog.ismailmo.com)
+# [blog.ismailmo.com](https://blog.ismailmo.com)
 
 Just here to write to get better at writing.
 
