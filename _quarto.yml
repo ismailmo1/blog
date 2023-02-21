@@ -14,11 +14,6 @@ website:
         href: https://github.com/ismailmo1
       - icon: linkedin
         href: https://linkedin.com/in/ismailmo-chem
-  body-footer: |
-    Any thoughts, comments or ideas? Please let me know [here](mailto:ismailmo4@gmail.com)!
-  # comments:
-  #   giscus:
-  #     repo: https://github.com/ismailmo1/blog/
   open-graph: true
   navbar:
     right:
@@ -27,8 +22,6 @@ website:
         href: https://github.com/ismailmo1
       - icon: linkedin
         href: https://linkedin.com/in/ismailmo-chem
-listing:
-  default
 format:
   html:
     theme:
