@@ -2,46 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/csharp-first-steps/index.html</loc>
-    <lastmod>2023-02-27T13:22:04.176Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ismailmo1/blog/posts/abstract-vs-virtual/index.html</loc>
-    <lastmod>2023-02-27T13:22:06.464Z</lastmod>
+    <lastmod>2023-02-27T13:26:02.422Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/async-streamlit/async_scraping.html</loc>
-    <lastmod>2023-02-27T13:22:07.268Z</lastmod>
+    <lastmod>2023-02-27T13:26:04.966Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/worldcup-fatigue/index.html</loc>
-    <lastmod>2023-02-27T13:22:08.140Z</lastmod>
+    <lastmod>2023-02-27T13:26:05.802Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/csharp-notebooks/index.html</loc>
-    <lastmod>2023-02-27T13:22:08.692Z</lastmod>
+    <lastmod>2023-02-27T13:26:06.358Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/CL19-strangers/avail-heatmaps.html</loc>
-    <lastmod>2023-02-27T13:22:10.337Z</lastmod>
+    <lastmod>2023-02-27T13:26:07.902Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/pytest-sql/index.html</loc>
-    <lastmod>2023-02-27T13:22:12.949Z</lastmod>
+    <lastmod>2023-02-27T13:26:09.466Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/lpool-shot-xg/index.html</loc>
-    <lastmod>2023-02-27T13:22:13.773Z</lastmod>
+    <lastmod>2023-02-27T13:26:10.274Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/posts/func-indexes/index.html</loc>
-    <lastmod>2023-02-27T13:22:14.457Z</lastmod>
+    <lastmod>2023-02-27T13:26:10.946Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/about.html</loc>
-    <lastmod>2023-02-27T13:22:14.841Z</lastmod>
+    <lastmod>2023-02-27T13:26:11.326Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ismailmo1/blog/index.html</loc>
-    <lastmod>2023-02-27T13:22:15.417Z</lastmod>
+    <lastmod>2023-02-27T13:26:11.850Z</lastmod>
   </url>
 </urlset>
