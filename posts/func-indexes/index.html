@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-02-27">
+<meta name="description" content="Debugging high CPU load in postgres and compiling orm queries">
+
+<title>Ismail Mohammed - Functional Indexes in Postgres</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6GL9ZFETVN"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+ 
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'analytics_storage': 'denied'
+  });
+gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Ismail Mohammed - Functional Indexes in Postgres">
+<meta property="og:description" content="Debugging high CPU load in postgres and compiling orm queries">
+<meta property="og:image" content="https://github.com/ismailmo1/blog/posts/func-indexes/pg-btree.png">
+<meta property="og:site-name" content="Ismail Mohammed">
+<meta property="og:image:height" content="796">
+<meta property="og:image:width" content="1516">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Ismail Mohammed</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ismailmo1"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://linkedin.com/in/ismailmo-chem"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Functional Indexes in Postgres</h1>
+                  <div>
+        <div class="description">
+          Debugging high CPU load in postgres and compiling orm queries
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">debugging</div>
+                <div class="quarto-category">postgres</div>
+                <div class="quarto-category">sql</div>
+                <div class="quarto-category">docker</div>
+                <div class="quarto-category">load-testing</div>
+                <div class="quarto-category">locust</div>
+                <div class="quarto-category">flask</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 27, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#finding-the-problematic-query" id="toc-finding-the-problematic-query" class="nav-link active" data-scroll-target="#finding-the-problematic-query"><span class="toc-section-number">1</span>  Finding the problematic query</a>
+  <ul class="collapse">
+  <li><a href="#digging-into-flask-security" id="toc-digging-into-flask-security" class="nav-link" data-scroll-target="#digging-into-flask-security"><span class="toc-section-number">1.1</span>  Digging into Flask-security</a></li>
+  <li><a href="#compiling-orm-queries" id="toc-compiling-orm-queries" class="nav-link" data-scroll-target="#compiling-orm-queries"><span class="toc-section-number">1.2</span>  Compiling ORM Queries</a></li>
+  </ul></li>
+  <li><a href="#analysing-the-query-execution-plan" id="toc-analysing-the-query-execution-plan" class="nav-link" data-scroll-target="#analysing-the-query-execution-plan"><span class="toc-section-number">2</span>  Analysing the query execution plan</a></li>
+  <li><a href="#functional-indexes" id="toc-functional-indexes" class="nav-link" data-scroll-target="#functional-indexes"><span class="toc-section-number">3</span>  Functional indexes</a></li>
+  <li><a href="#local-load-testing" id="toc-local-load-testing" class="nav-link" data-scroll-target="#local-load-testing"><span class="toc-section-number">4</span>  Local load testing</a>
+  <ul class="collapse">
+  <li><a href="#reproducing-a-minimal-example" id="toc-reproducing-a-minimal-example" class="nav-link" data-scroll-target="#reproducing-a-minimal-example"><span class="toc-section-number">4.1</span>  Reproducing a minimal example</a></li>
+  <li><a href="#load-testing" id="toc-load-testing" class="nav-link" data-scroll-target="#load-testing"><span class="toc-section-number">4.2</span>  Load testing</a>
+  <ul class="collapse">
+  <li><a href="#cpu-usage" id="toc-cpu-usage" class="nav-link" data-scroll-target="#cpu-usage"><span class="toc-section-number">4.2.1</span>  CPU Usage</a></li>
+  </ul></li>
+  <li><a href="#response-times" id="toc-response-times" class="nav-link" data-scroll-target="#response-times"><span class="toc-section-number">4.3</span>  Response times</a></li>
+  </ul></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="toc-section-number">5</span>  Limitations</a>
+  <ul class="collapse">
+  <li><a href="#storage" id="toc-storage" class="nav-link" data-scroll-target="#storage"><span class="toc-section-number">5.1</span>  Storage</a></li>
+  <li><a href="#write-speed" id="toc-write-speed" class="nav-link" data-scroll-target="#write-speed"><span class="toc-section-number">5.2</span>  Write speed</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/quarto-dev/quarto-demo/blob/main/posts/func-indexes/index.ipynb" class="toc-action">Edit this page</a></p><p><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
+
+
+
+<p>I was recently diagnosing a high number of 500 errors in a web application built with <a href="https://flask.palletsprojects.com">Flask</a> and found that the frequency of 5XX response codes correlated with a high CPU% usage on the postgres database that the flask app connected to.</p>
+<p>Digging into the logs of the flask app there were a bunch of errors from <a href="https://www.psycopg.org/docs/">psycopg2</a>: a python package for talking to the postgres database:</p>
+<pre><code>sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) SSL SYSCALL error: EOF detected
+[
+    &lt;SELECT user.id, user.name...
+    REST OF SQL QUERY HERE
+    ...
+    &gt;
+]
+</code></pre>
+<p>So naturally, I first checked if a <code>SSL SYSCALL error</code> was a common enough issue to show up on search and found <a href="https://stackoverflow.com/questions/24130305/postgres-ssl-syscall-error-eof-detected-with-python-and-psycopg">some</a> <a href="https://dba.stackexchange.com/questions/315219/postgresql-foreign-data-wrappers-simultaneous-queries-wont-finish">clues</a> as to what might be happening here. Other developers had run into this error and it ranged from seeing it during <a href="https://stackoverflow.com/a/63130830/11538979">long running/slow queries</a>, <a href="https://stackoverflow.com/a/36086325/11538979">low resources</a> or <a href="https://stackoverflow.com/a/47874902/11538979">locked tables</a>.</p>
+<p>This matched the observation of high DB CPU% utilisation that we saw on our app so the next step was figuring out what was causing this.</p>
+<div class="column-page">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="dbcpu-httperr.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Correlation of high DB CPU usage with 5XX http response codes</figcaption><p></p>
+</figure>
+</div>
+</div>
+<section id="finding-the-problematic-query" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Finding the problematic query</h1>
+<p>I was fairly confident that we had plenty of resources to handle “normal” load on our database since you can see the spikes at 8-9am were much higher than usual load - so there must’ve been something strange happening in the morning that doesn’t happen during the rest of the day.</p>
+<p>It wasn’t unusual to see high traffic in the morning when users are waking up and logging into the website as one of their first activities of the day - but logging in didn’t require use of a particularly intensive query - especially compared to the “heavier” analytical queries we had for complex analyses of large datasets. Regardless, it was still worth looking into this even just to rule out this possibility, especially given that the error did show a query that looked like it was selecting from the users table - suspiciously similar to a query you’d run while logging a user in!</p>
+<section id="digging-into-flask-security" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="digging-into-flask-security"><span class="header-section-number">1.1</span> Digging into Flask-security</h2>
+<p>One of the great things about Flask is its ecosystem of extensions that allow you to quickly integrate common features into your application. In this case, the <a href="https://flask-security-too.readthedocs.io/en/stable/">Flask-Security extension</a> (which itself is a combination of other Flask extensions) enables integration of common security mechanisms such as various types of authentication, user registration and sign in.</p>
+<p>The extension implements a <code>/login</code> endpoint which renders a login form that runs a query against a datastore (in this case a postgres db) when submitted by the user. The login form class inherits from a Flask-WTF <code>BaseForm</code> class and implements a <code>validate</code> method to login the user:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://github.com/mattupstate/flask-security/blob/master/flask_security/forms.py#L206</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoginForm(Form, NextFormMixin):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""The default login form"""</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    email <span class="op">=</span> StringField(get_form_field_label(<span class="st">'email'</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                        validators<span class="op">=</span>[Required(message<span class="op">=</span><span class="st">'EMAIL_NOT_PROVIDED'</span>)])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    password <span class="op">=</span> PasswordField(get_form_field_label(<span class="st">'password'</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                             validators<span class="op">=</span>[password_required])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    remember <span class="op">=</span> BooleanField(get_form_field_label(<span class="st">'remember_me'</span>))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    submit <span class="op">=</span> SubmitField(get_form_field_label(<span class="st">'login'</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>       ...</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> validate(<span class="va">self</span>):</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.user <span class="op">=</span> _datastore.get_user(<span class="va">self</span>.email.data)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The datastore is an instance of a <code>SQLAlchemyUserDataStore</code> which is responsible for running the query:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://github.com/mattupstate/flask-security/blob/674b18103fa8734aca71bbd084ea01e3709817ef/flask_security/datastore.py#L227</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SQLAlchemyUserDatastore(SQLAlchemyDatastore, UserDatastore):</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A SQLAlchemy datastore implementation for Flask-Security that assumes the</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">    use of the Flask-SQLAlchemy extension.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, db, user_model, role_model):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        SQLAlchemyDatastore.<span class="fu">__init__</span>(<span class="va">self</span>, db)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        UserDatastore.<span class="fu">__init__</span>(<span class="va">self</span>, user_model, role_model)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_user(<span class="va">self</span>, identifier):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> sqlalchemy <span class="im">import</span> func <span class="im">as</span> alchemyFn</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>._is_numeric(identifier):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>.user_model.query.get(identifier)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attr <span class="kw">in</span> get_identity_attributes():</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            query <span class="op">=</span> alchemyFn.lower(<span class="bu">getattr</span>(<span class="va">self</span>.user_model, attr)) <span class="op">\</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                <span class="op">==</span> alchemyFn.lower(identifier)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            rv <span class="op">=</span> <span class="va">self</span>.user_model.query.<span class="bu">filter</span>(query).first()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> rv <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> rv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The user model that was passed in to the constructor to instantiate this datastore during the flask application setup:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> User(db.Model, UserMixin):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span> <span class="op">=</span> db.Column(db.Integer, primary_key<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    email <span class="op">=</span> db.Column(db.String(<span class="dv">255</span>), unique<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    password <span class="op">=</span> db.Column(db.String(<span class="dv">255</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    active <span class="op">=</span> db.Column(db.Boolean())</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    confirmed_at <span class="op">=</span> db.Column(db.DateTime())</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    roles <span class="op">=</span> db.relationship(</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Role"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        secondary<span class="op">=</span>roles_users,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        backref<span class="op">=</span>db.backref(<span class="st">"users"</span>, lazy<span class="op">=</span><span class="st">"dynamic"</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In order of execution:</p>
+<ol type="1">
+<li>requests received for a protected page</li>
+<li>redirect to the login page with a <code>LoginForm</code></li>
+<li>user enters credentials and the form is submitted</li>
+<li>run <code>.validate()</code> on the <code>LoginForm</code></li>
+<li>run <code>_datastore.get_user()</code> to fetch the user model</li>
+<li><code>SQLAlchemyUserDatastore</code> runs a query against the database</li>
+</ol>
+</section>
+<section id="compiling-orm-queries" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="compiling-orm-queries"><span class="header-section-number">1.2</span> Compiling ORM Queries</h2>
+<p>At this point we still don’t have a SQL query that we can analyse because in step 6 the query is abstracted away through an ORM: <code>SQLALchemy</code> creates the query for us and maps it to an <code>User</code> model object:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://github.com/mattupstate/flask-security/blob/674b18103fa8734aca71bbd084ea01e3709817ef/flask_security/datastore.py#L245</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in this case attr = email</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> alchemyFn.lower(<span class="bu">getattr</span>(<span class="va">self</span>.user_model, attr)) <span class="op">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">==</span> alchemyFn.lower(identifier)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>rv <span class="op">=</span> <span class="va">self</span>.user_model.query.<span class="bu">filter</span>(query).first()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Luckily we can stringify sqlachemy queries to generate the corresponding SQL query:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="va">self</span>.user_model.query.<span class="bu">filter</span>(query))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">id</span> <span class="kw">AS</span> user_id, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.email <span class="kw">AS</span> user_email, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">password</span> <span class="kw">AS</span> user_password, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.active <span class="kw">AS</span> user_active,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>     <span class="ot">"user"</span>.confirmed_at <span class="kw">AS</span> user_confirmed_at </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lower</span>(<span class="ot">"user"</span>.email) <span class="op">=</span> <span class="fu">lower</span>(%(lower_1)s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="analysing-the-query-execution-plan" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Analysing the query execution plan</h1>
+<p>Now that we have a concrete query to work with, we can learn a bit about the execution plan that the PostgresSQL planner generates to see if we can spot anything unusual.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPLAIN</span> <span class="kw">ANALYZE</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">id</span> <span class="kw">AS</span> user_id, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.email <span class="kw">AS</span> user_email, </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">password</span> <span class="kw">AS</span> user_password, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.active <span class="kw">AS</span> user_active,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>     <span class="ot">"user"</span>.confirmed_at <span class="kw">AS</span> user_confirmed_at </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lower</span>(<span class="ot">"user"</span>.email) <span class="op">=</span> <span class="fu">lower</span>(<span class="st">'test@email.com'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>QUERY PLAN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Seq Scan on “user” (cost=0.00..2226.01 rows=500 width=32) (actual time=22.078..22.079 rows=0 loops=1)</td>
+</tr>
+<tr class="even">
+<td>Filter: (lower((email)::text) = ‘test@email.com’::text)</td>
+</tr>
+<tr class="odd">
+<td>Rows Removed by Filter: 100001</td>
+</tr>
+<tr class="even">
+<td>Planning Time: 0.106 ms</td>
+</tr>
+<tr class="odd">
+<td>Execution Time: 22.093 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The first thing that sticks out here is that we are using a sequential scan so this will not scale well as the number of users grows larger - since all the rows will be scanned sequentially (as the name implies). I assumed the query planner would pick index scan instead since we have a unique constraint in our model for user emails which created an index in our database:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    indexname, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    indexdef </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    pg_indexes </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    schemaname <span class="op">=</span> <span class="st">'public'</span> <span class="kw">AND</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    tablename <span class="op">=</span> <span class="st">'user'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="table">
+<colgroup>
+<col style="width: 52%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>indexname</th>
+<th>indexdef</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>user_pkey</td>
+<td>CREATE UNIQUE INDEX user_pkey ON public.”user” USING btree (id)</td>
+</tr>
+<tr class="even">
+<td>user_email_key</td>
+<td>CREATE UNIQUE INDEX user_email_key ON public.”user” USING btree (email)</td>
+</tr>
+</tbody>
+</table>
+<p>However if we look closely at our query we can see that we use the <code>lower()</code> function on our email before running the query so it can’t use the <code>user_email_key</code> index:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="fu">lower</span>(<span class="ot">"user"</span>.email) <span class="op">=</span> <span class="fu">lower</span>(<span class="ot">"test@email.com"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can test this out by removing the lower function and check if it uses the index:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPLAIN</span> <span class="kw">ANALYZE</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">id</span> <span class="kw">AS</span> user_id, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.email <span class="kw">AS</span> user_email, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.<span class="kw">password</span> <span class="kw">AS</span> user_password, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.active <span class="kw">AS</span> user_active,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>     <span class="ot">"user"</span>.confirmed_at <span class="kw">AS</span> user_confirmed_at </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span> </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="ot">"user"</span>.email <span class="op">=</span> <span class="st">'test@email.com'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Bingo! As expected we use the index scan here so the <code>lower()</code> was indeed causing a problem:</p>
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>QUERY PLAN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Index Scan using user_email_key on “user” (cost=0.42..8.44 rows=1 width=32) (actual time=0.025..0.026 rows=0 loops=1)</td>
+</tr>
+<tr class="even">
+<td>Index Cond: ((email)::text = ‘test@email.com’::text)</td>
+</tr>
+<tr class="odd">
+<td>Planning Time: 0.161 ms</td>
+</tr>
+<tr class="even">
+<td>Execution Time: 0.053 ms</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functional-indexes" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Functional indexes</h1>
+<p>Now that we have found the cause, we can speed up this query with an index to solve this in a few ways: 1. change the query so it is case sensitive (i.e.&nbsp;remove the lower call) and ensure all email entries in the database are in lower case so we can use the existing <code>user_email_key</code> index 2. add a functional index</p>
+<p>The first option would require us to change all exisiting emails in the database to lower case and add some validation or preprocessing of the email string during registration to ensure only lowercase emails are added which is more invasive than the second option.</p>
+<p>Postgres supports the use of <a href="https://www.postgresql.org/docs/7.3/indexes-functional.html">functional indexes</a> so we can define an index on the result of a function applied to a column:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> user_email_lower <span class="kw">ON</span> <span class="kw">public</span>.<span class="ot">"user"</span> <span class="kw">using</span> btree (<span class="fu">lower</span>(email))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can then run the case insensitive query again with the <code>lower()</code> call: we can see the new <code>user_email_lower</code> index is used!</p>
+<table class="table">
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>QUERY PLAN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Index Scan using user_email_lower on “user” (cost=0.42..8.44 rows=1 width=30) (actual time=0.033..0.034 rows=0 loops=1)</td>
+</tr>
+<tr class="even">
+<td>Index Cond: (lower((email)::text) = ‘test@email.com’::text)</td>
+</tr>
+<tr class="odd">
+<td>Planning Time: 1.517 ms</td>
+</tr>
+<tr class="even">
+<td>Execution Time: 0.215 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The total cost is reduced from 2226.01 to 8.44: a 263% increase! *(The first number is the startup cost of the query, this is expected to be lower for sequential scan since it can just start reading from the first row whereas for index scan it will have to read from the index before it can start reading the first row.)</p>
+</section>
+<section id="local-load-testing" class="level1 page-columns page-full" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Local load testing</h1>
+<p>So we’ve figured out the root cause of the problem and now can be quite confident that the issue is solved. However the real issue facing users wasn’t necessarily a slow query - it was a slow/unresponsive website in the morning when they were trying to login.</p>
+<section id="reproducing-a-minimal-example" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="reproducing-a-minimal-example"><span class="header-section-number">4.1</span> Reproducing a minimal example</h2>
+<p>To test the solution end to end (before deploying to staging/test environments) we can reproduce this scenario with a minimal example of a flask-security app backed by a postgres database. You can find the full demo example in the <a href="https://github.com/ismailmo1/func-index-demo">repo here</a> which lets you spin this up with a single <code>docker compose</code> command.</p>
+</section>
+<section id="load-testing" class="level2 page-columns page-full" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="load-testing"><span class="header-section-number">4.2</span> Load testing</h2>
+<p>We can swarm our system with thousands of users using <a href="https://locust.io/">locust</a> to simulate load on our database during the morning rush to login. I defined a test that sends a post request to the <code>/login</code> endpoint and ramped up the users to 100,000 to first see the effect on our CPU usage and response times. The container was limited to 1 CPU with 50M of ram (see <a href="https://github.com/ismailmo1/func-index-demo/blob/main/docker-compose.yml">docker-compose.yml</a> for full details).</p>
+<section id="cpu-usage" class="level3 page-columns page-full" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="cpu-usage"><span class="header-section-number">4.2.1</span> CPU Usage</h3>
+<p>First I wanted to reproduce the high CPU usage on the database instance seen in production locally, so the database was seeded with 1000 users and the cpu utilisation on the database was recorded with</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell page-columns page-full" data-execution_count="162">
+<div class="cell-output cell-output-display column-page">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_162.html" frameborder="0" allowfullscreen=""></iframe>
+</div>
+</div>
+</section>
+</section>
+<section id="response-times" class="level2 page-columns page-full" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="response-times"><span class="header-section-number">4.3</span> Response times</h2>
+<p>The most impactful thing is how long it takes for users to log in and start using the app, so it was important to make sure that the high DB CPU% was actually having an impact on response times. The data from our load testing in locust correlated pretty well with the results above:</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Extracting data from locust
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>I couldn’t find an easy way to extract raw data points from locust (only images of the charts), but I found that the datapoints are available in the webpage via a <code>stats_history</code> javascript variable so you can copy the return value into a json file after running:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">// run this in the console of the locust webpage (i.e. localhost:8089 when locust is running)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(stats_history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="cell page-columns page-full" data-execution_count="163">
+<div class="cell-output cell-output-display column-page">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_163.html" frameborder="0" allowfullscreen=""></iframe>
+</div>
+</div>
+<p>For me this is the most impactful metric, creating a functional index that the login request can use has a dramatic drop in response times: from a peak of 21 seconds to 18ms: a whopping 1167x faster!</p>
+</section>
+</section>
+<section id="limitations" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Limitations</h1>
+<p>It’s pretty well known that indexes improve performance of queries that read data but as with every design decision there are trade-offs.</p>
+<section id="storage" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="storage"><span class="header-section-number">5.1</span> Storage</h2>
+<p>Indexes aren’t free: they do take up space, in this case where we had 1000 users the index was ~3MB which isn’t much in the context of database storage but for tables with a lot of data or systems with more stringent storage constraints this could be impactful.</p>
+</section>
+<section id="write-speed" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="write-speed"><span class="header-section-number">5.2</span> Write speed</h2>
+<p>In postgres the default index type is a <code>btree</code> which may need to be rebalanced by recursively splitting nodes if there’s no more room for a new key in the tree node (<a href="https://use-the-index-luke.com/sql/dml/insert">this article</a> explains why this is so expensive).</p>
+<p>I couldn’t find any documentation on if a <em>functional</em> index would be more expensive than a normal one - but theoretically it seems like it would be: since we’d have to run the function on every insert although it could be insignificant compared to other things like rebalancing.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ismailmo1">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://linkedin.com/in/ismailmo-chem">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+</body></html>

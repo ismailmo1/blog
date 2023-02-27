@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/abstract-vs-virtual/index.html",
+      "/posts/func-indexes/index.html",
       "/posts/csharp-notebooks/index.html",
       "/posts/csharp-first-steps/index.html",
       "/posts/lpool-shot-xg/index.html",
