@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -19,11 +19,12 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -48,47 +49,17 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -112,7 +83,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -121,8 +98,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6GL9ZFETVN"></script>
@@ -140,53 +119,53 @@ gtag('js', new Date());
 gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Ismail Mohammed - The Mystery of 2019 Champions League Final">
 <meta property="og:description" content="Exploring a strange statistic about the Liverpool starting 11 in the Champions League final">
-<meta property="og:image" content="https://github.com/ismailmo1/blog/posts/CL19-strangers/lineup.jpg">
-<meta property="og:site-name" content="Ismail Mohammed">
+<meta property="og:image" content="https://ismailmo1.github.io/blog/posts/CL19-strangers/lineup.jpg">
+<meta property="og:site_name" content="Ismail Mohammed">
 </head>
 
 <body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Ismail Mohammed</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/ismailmo1"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/ismailmo1"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://linkedin.com/in/ismailmo-chem"><i class="bi bi-linkedin" role="img">
+    <a class="nav-link" href="https://linkedin.com/in/ismailmo-chem"> <i class="bi bi-linkedin" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div class="quarto-toggle-container">
-                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
-              </div>
-              <div id="quarto-search" class="" title="Search"></div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -228,25 +207,27 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-collection" id="toc-data-collection" class="nav-link active" data-scroll-target="#data-collection"><span class="toc-section-number">1</span>  Data Collection</a></li>
-  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing"><span class="toc-section-number">2</span>  Data Processing</a></li>
-  <li><a href="#initial-visualisation" id="toc-initial-visualisation" class="nav-link" data-scroll-target="#initial-visualisation"><span class="toc-section-number">3</span>  Initial Visualisation</a></li>
-  <li><a href="#more-data-processing" id="toc-more-data-processing" class="nav-link" data-scroll-target="#more-data-processing"><span class="toc-section-number">4</span>  More Data Processing</a></li>
-  <li><a href="#final-visualisation" id="toc-final-visualisation" class="nav-link" data-scroll-target="#final-visualisation"><span class="toc-section-number">5</span>  Final Visualisation</a></li>
-  <li><a href="#feedback" id="toc-feedback" class="nav-link" data-scroll-target="#feedback"><span class="toc-section-number">6</span>  Feedback</a></li>
+  <li><a href="#data-collection" id="toc-data-collection" class="nav-link active" data-scroll-target="#data-collection"><span class="header-section-number">1</span> Data Collection</a></li>
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing"><span class="header-section-number">2</span> Data Processing</a></li>
+  <li><a href="#initial-visualisation" id="toc-initial-visualisation" class="nav-link" data-scroll-target="#initial-visualisation"><span class="header-section-number">3</span> Initial Visualisation</a></li>
+  <li><a href="#more-data-processing" id="toc-more-data-processing" class="nav-link" data-scroll-target="#more-data-processing"><span class="header-section-number">4</span> More Data Processing</a></li>
+  <li><a href="#final-visualisation" id="toc-final-visualisation" class="nav-link" data-scroll-target="#final-visualisation"><span class="header-section-number">5</span> Final Visualisation</a></li>
+  <li><a href="#feedback" id="toc-feedback" class="nav-link" data-scroll-target="#feedback"><span class="header-section-number">6</span> Feedback</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/quarto-dev/quarto-demo/blob/main/posts/CL19-strangers/avail-heatmaps.ipynb" class="toc-action">Edit this page</a></p><p><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.dev/quarto-dev/quarto-demo/blob/main/posts/CL19-strangers/avail-heatmaps.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content">
+
 
 
 
@@ -261,22 +242,22 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="lineup.jpg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Starting 11 for the final</figcaption><p></p>
+<figcaption>Starting 11 for the final</figcaption>
 </figure>
 </div>
 <p>This starting lineup is remembered by many fans as <em>the</em> defining team of that era and many of the comments from the reddit post capture why the statistic above is so unintuitive.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="reddit-comments.jpg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Comments on the stat from reddit</figcaption><p></p>
+<figcaption>Comments on the stat from reddit</figcaption>
 </figure>
 </div>
 <p>So how can this be possible? To try and uncover the mystery we can start by looking at the data from the games played during that season and extract the starting 11 from each game.</p>
 <section id="data-collection" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Data Collection</h1>
 <p>There are many free resources for football data, but <a href="transfermarket">transfermarket</a> seemed to be the best option to minimise the post-processing needed for this analysis. The code used to scrape this data can be found <a href="https://github.com/ismailmo1/football-data-viz/tree/main/transfermarket">here</a> - the key libraries used were <a href="https://pandas.pydata.org/">pandas</a>, <a href="https://beautiful-soup-4.readthedocs.io/en/latest/">beautifulsoup</a> and <a href="https://requests.readthedocs.io/en/latest/">requests</a>.</p>
-<div class="cell" data-execution_count="1">
-<details>
+<div id="cell-4" class="cell" data-execution_count="1">
+<details class="code-fold">
 <summary>Data collection and processing libraries</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -296,7 +277,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb1-16"><a href="#cb1-16"></a><span class="im">from</span> transfermarket <span class="im">import</span> leagues, players, teams</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="2">
+<div id="cell-5" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>prem_clubs_18 <span class="op">=</span> leagues.get_prem_club_list(season<span class="op">=</span><span class="st">"2018"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2"></a>lpool_19_players <span class="op">=</span> teams.get_players(team_url<span class="op">=</span>prem_clubs_18[<span class="st">'Liverpool FC'</span>])</span>
 <span id="cb2-3"><a href="#cb2-3"></a>lpool_19_players.keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -305,7 +286,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 </div>
 <p>We’re only interested in the starting 11 from the final so the we can filter out the other players from the squad:</p>
-<div class="cell" data-execution_count="3">
+<div id="cell-7" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>cl_19_lineup <span class="op">=</span> [<span class="st">'Trent Alexander-Arnold'</span>,</span>
 <span id="cb4-2"><a href="#cb4-2"></a>                <span class="st">'Georginio Wijnaldum'</span>,</span>
 <span id="cb4-3"><a href="#cb4-3"></a>                <span class="st">'Fabinho'</span>,</span>
@@ -331,7 +312,7 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <li>Played (sub)</li>
 <li>Played (starter)</li>
 </ol>
-<div class="cell" data-execution_count="4">
+<div id="cell-9" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>avail_18_19 <span class="op">=</span> []</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="cf">for</span> player,url <span class="kw">in</span> cl_19_lineup_urls.items():</span>
@@ -342,14 +323,14 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="data-processing" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Data Processing</h1>
 <p>Most of the data processing is done in a separate module (see code <a href="https://github.com/ismailmo1/football-data-viz/tree/main/transfermarket">here</a>) but for this specific analysis we want to ensure we are only looking at data related to Liverpool fixtures, since the player availability data will also include international games for their country.</p>
-<div class="cell" data-execution_count="5">
+<div id="cell-11" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>strangers<span class="op">=</span> pd.concat(avail_18_19)</span>
 <span id="cb6-2"><a href="#cb6-2"></a>liverpool_fix <span class="op">=</span> teams.get_team_fixtures(prem_clubs_18[<span class="st">"Liverpool FC"</span>], <span class="st">"2018"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3"></a>fixtures_num_starters <span class="op">=</span> strangers.T.join(liverpool_fix, how<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb6-4"><a href="#cb6-4"></a>heatmap_data <span class="op">=</span> fixtures_num_starters.iloc[:, :<span class="dv">11</span>].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are also cases where the availability doesn’t fall into any of the categories above, so in that case we assume that they weren’t in the squad. This usually occurs when the player is suspended since the web-scraping logic doesn’t account for that (yet) - but there could also be other cases where transfermarket’s description doesn’t meet any of the logic defined in the web-scraping functions. We’ll see some more examples later where there are rooms for improvement in the web-scraper and the visualisations help identify these.</p>
-<div class="cell" data-execution_count="6">
+<div id="cell-13" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># assumption: NaN value means they were likely suspended</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co"># either way they werent in the squad so makes sense </span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="co"># to assign that (to me atleast!) </span></span>
@@ -357,113 +338,114 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb7-5"><a href="#cb7-5"></a>fixtures_num_starters <span class="op">=</span> fixtures_num_starters.iloc[:,:<span class="dv">11</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The number of players in the starting lineup can be calculated from the availability category they were put into: we can take a sum of all the instances of “Played (starter)” for each game.</p>
-<div class="cell" data-execution_count="7">
+<div id="cell-15" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># add count</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>fixtures_num_starters[<span class="st">'strangers_count'</span>] <span class="op">=</span> (fixtures_num_starters <span class="op">==</span> <span class="dv">4</span> ).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a>fixtures_num_starters.reset_index(inplace<span class="op">=</span><span class="va">True</span>, drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This is what our processed data looks like (showing first 5 rows only)</p>
-<div class="cell" data-execution_count="8">
+<div id="cell-17" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display" data-execution_count="8">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>virgil-van-dijk</th>
-      <th>andrew-robertson</th>
-      <th>alisson</th>
-      <th>georginio-wijnaldum</th>
-      <th>roberto-firmino</th>
-      <th>jordan-henderson</th>
-      <th>sadio-mane</th>
-      <th>joel-matip</th>
-      <th>fabinho</th>
-      <th>trent-alexander-arnold</th>
-      <th>mohamed-salah</th>
-      <th>strangers_count</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>8</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>8</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>8</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>9</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>8</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">virgil-van-dijk</th>
+<th data-quarto-table-cell-role="th">andrew-robertson</th>
+<th data-quarto-table-cell-role="th">alisson</th>
+<th data-quarto-table-cell-role="th">georginio-wijnaldum</th>
+<th data-quarto-table-cell-role="th">roberto-firmino</th>
+<th data-quarto-table-cell-role="th">jordan-henderson</th>
+<th data-quarto-table-cell-role="th">sadio-mane</th>
+<th data-quarto-table-cell-role="th">joel-matip</th>
+<th data-quarto-table-cell-role="th">fabinho</th>
+<th data-quarto-table-cell-role="th">trent-alexander-arnold</th>
+<th data-quarto-table-cell-role="th">mohamed-salah</th>
+<th data-quarto-table-cell-role="th">strangers_count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>1.0</td>
+<td>2.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>2.0</td>
+<td>1.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>1.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>1.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>2.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>8</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
@@ -471,8 +453,8 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="initial-visualisation" class="level1 page-columns page-full" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Initial Visualisation</h1>
 <p>Now for the fun part! Since our data is 2 dimensional : players and dates, a heatmap seems like it would be a good way to to visualise the availability of each individual player over the course of the season, and a bar plot to keep count of how many of them started the game:</p>
-<div class="cell" data-execution_count="9">
-<details>
+<div id="cell-20" class="cell" data-execution_count="9">
+<details class="code-fold">
 <summary>Visualisation libraries</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="im">import</span> matplotlib</span>
 <span id="cb9-2"><a href="#cb9-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -490,23 +472,27 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <li>Improve color scheme to make it more accessible</li>
 <li>Align the bars in the bar plot so it is aligned with the heatmap squares - currently it is offset</li>
 </ul>
-<div class="cell page-columns page-full" data-execution_count="10">
+<div id="cell-22" class="cell page-columns page-full" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>fig,(ax1,ax2) <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">10</span>), nrows<span class="op">=</span><span class="dv">2</span>, sharex<span class="op">=</span><span class="va">True</span>, height_ratios<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">4</span>], constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>
 <span id="cb10-3"><a href="#cb10-3"></a>bar_plot <span class="op">=</span> ax1.bar(fixtures_num_starters.index, fixtures_num_starters[<span class="st">"strangers_count"</span>])</span>
 <span id="cb10-4"><a href="#cb10-4"></a>plot <span class="op">=</span> sns.heatmap(fixtures_num_starters.iloc[:, :<span class="op">-</span><span class="dv">1</span>].T, ax<span class="op">=</span>ax2, cmap<span class="op">=</span>sns.color_palette(<span class="st">"RdYlGn"</span>),linewidths<span class="op">=</span><span class="fl">0.5</span>, linecolor<span class="op">=</span><span class="st">'lightgray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display column-screen">
-<p><img src="avail-heatmaps_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+<div class="cell-output cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="avail-heatmaps_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img column-screen"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Before we address the visualisation adjustments, lets grab some data for the previous season (2017/2018) so we can add some more context around the statistic:</p>
 </section>
 <section id="more-data-processing" class="level1 page-columns page-full" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> More Data Processing</h1>
-<div class="cell" data-execution_count="11">
+<div id="cell-25" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>liverpool_fix_17_18 <span class="op">=</span> teams.get_team_fixtures(prem_clubs_18[<span class="st">"Liverpool FC"</span>], <span class="st">"2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="12">
+<div id="cell-26" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>avail_17_18 <span class="op">=</span> []</span>
 <span id="cb12-2"><a href="#cb12-2"></a></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="cf">for</span> player,url <span class="kw">in</span> cl_19_lineup_urls.items():</span>
@@ -516,62 +502,63 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb12-7"><a href="#cb12-7"></a>    avail_17_18.append(avail_df.T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>More data, more problems - we now need to account for when players didn’t play for Liverpool - e.g.&nbsp;Virgil Van Dijk only join in January 2018 and was playing for Southampton during the first half of the season:</p>
-<div class="cell" data-execution_count="13">
+<div id="cell-28" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a>vvd_idx <span class="op">=</span> [idx <span class="cf">for</span> idx, df <span class="kw">in</span> <span class="bu">enumerate</span>(avail_17_18) <span class="cf">if</span> <span class="st">'virgil'</span> <span class="kw">in</span> df.index[<span class="dv">0</span>]][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="14">
+<div id="cell-29" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a>avail_17_18[vvd_idx].iloc[:<span class="dv">5</span>, :<span class="dv">5</span>].dropna(axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>2017-08-12</th>
-      <th>2017-08-19</th>
-      <th>2017-08-23</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>virgil-van-dijk</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>Home team.1</th>
-      <td>Southampton (11.)</td>
-      <td>Southampton (11.)</td>
-      <td>Southampton</td>
-    </tr>
-    <tr>
-      <th>Away team.1</th>
-      <td>Swansea (12.)</td>
-      <td>West Ham (20.)</td>
-      <td>Wolves</td>
-    </tr>
-    <tr>
-      <th>Result</th>
-      <td>0:0</td>
-      <td>3:2</td>
-      <td>0:2</td>
-    </tr>
-    <tr>
-      <th>Matchday</th>
-      <td>1</td>
-      <td>2</td>
-      <td>Qualifying Round 2nd leg</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">2017-08-12</th>
+<th data-quarto-table-cell-role="th">2017-08-19</th>
+<th data-quarto-table-cell-role="th">2017-08-23</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">virgil-van-dijk</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Home team.1</td>
+<td>Southampton (11.)</td>
+<td>Southampton (11.)</td>
+<td>Southampton</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Away team.1</td>
+<td>Swansea (12.)</td>
+<td>West Ham (20.)</td>
+<td>Wolves</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Result</td>
+<td>0:0</td>
+<td>3:2</td>
+<td>0:2</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Matchday</td>
+<td>1</td>
+<td>2</td>
+<td>Qualifying Round 2nd leg</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
 <p>We can account for this by adding another category to our availability levels:</p>
-<div class="cell" data-execution_count="15">
+<div id="cell-31" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">def</span> is_liverpool(rw):</span>
 <span id="cb15-2"><a href="#cb15-2"></a>    <span class="cf">try</span>:</span>
 <span id="cb15-3"><a href="#cb15-3"></a>        <span class="cf">if</span> <span class="st">'Liverpool'</span> <span class="kw">in</span> rw[<span class="st">'Home team.1'</span>] <span class="kw">or</span> <span class="st">'Liverpool'</span> <span class="kw">in</span> rw[<span class="st">'Away team.1'</span>]:</span>
@@ -594,65 +581,66 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb15-20"><a href="#cb15-20"></a>vvd.iloc[:,<span class="dv">0</span>] <span class="op">=</span> vvd.<span class="bu">apply</span>(add_diff_team_availability, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This heuristic doesn’t work when they play against Liverpool for their old club - but we can just fix that manually since it’ll be easy to spot (one game for Liverpool surrounded by loads of games for Southampton will stick out like a sore thumb)</p>
-<div class="cell" data-execution_count="16">
+<div id="cell-33" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a>vvd.sample(<span class="dv">5</span>).iloc[:, :<span class="dv">3</span>].dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>virgil-van-dijk</th>
-      <th>Home team.1</th>
-      <th>Away team.1</th>
-    </tr>
-    <tr>
-      <th>Date</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>2018-05-06</th>
-      <td>4</td>
-      <td>Chelsea (5.)</td>
-      <td>Liverpool (4.)</td>
-    </tr>
-    <tr>
-      <th>2018-02-11</th>
-      <td>4</td>
-      <td>Southampton (15.)</td>
-      <td>Liverpool (3.)</td>
-    </tr>
-    <tr>
-      <th>2018-04-21</th>
-      <td>4</td>
-      <td>West Brom (20.)</td>
-      <td>Liverpool (3.)</td>
-    </tr>
-    <tr>
-      <th>2017-11-29</th>
-      <td>-1</td>
-      <td>Man City (1.)</td>
-      <td>Southampton (10.)</td>
-    </tr>
-    <tr>
-      <th>2018-02-04</th>
-      <td>4</td>
-      <td>Liverpool (3.)</td>
-      <td>Spurs (5.)</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">virgil-van-dijk</th>
+<th data-quarto-table-cell-role="th">Home team.1</th>
+<th data-quarto-table-cell-role="th">Away team.1</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-05-06</td>
+<td>4</td>
+<td>Chelsea (5.)</td>
+<td>Liverpool (4.)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2018-02-11</td>
+<td>4</td>
+<td>Southampton (15.)</td>
+<td>Liverpool (3.)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-04-21</td>
+<td>4</td>
+<td>West Brom (20.)</td>
+<td>Liverpool (3.)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-11-29</td>
+<td>-1</td>
+<td>Man City (1.)</td>
+<td>Southampton (10.)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-02-04</td>
+<td>4</td>
+<td>Liverpool (3.)</td>
+<td>Spurs (5.)</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
-<details>
+<div id="cell-34" class="cell" data-execution_count="17">
+<details class="code-fold">
 <summary>Let’s now grab data for the seasons before and after (17/18 and 19/20, 20/21 and 21/22)</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># should have refactored the data collection/processing loop into a function</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a></span>
@@ -752,117 +740,118 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb17-96"><a href="#cb17-96"></a>all_avail.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="17">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>virgil-van-dijk</th>
-      <th>andrew-robertson</th>
-      <th>alisson</th>
-      <th>georginio-wijnaldum</th>
-      <th>roberto-firmino</th>
-      <th>jordan-henderson</th>
-      <th>sadio-mane</th>
-      <th>joel-matip</th>
-      <th>fabinho</th>
-      <th>trent-alexander-arnold</th>
-      <th>mohamed-salah</th>
-      <th>strangers_count</th>
-      <th>date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>282</th>
-      <td>4.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>-1.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>6</td>
-      <td>2022-05-10</td>
-    </tr>
-    <tr>
-      <th>283</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>-1.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>7</td>
-      <td>2022-05-14</td>
-    </tr>
-    <tr>
-      <th>284</th>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>-1.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>3</td>
-      <td>2022-05-17</td>
-    </tr>
-    <tr>
-      <th>285</th>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>-1.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>6</td>
-      <td>2022-05-22</td>
-    </tr>
-    <tr>
-      <th>286</th>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>-1.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>8</td>
-      <td>2022-05-28</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">virgil-van-dijk</th>
+<th data-quarto-table-cell-role="th">andrew-robertson</th>
+<th data-quarto-table-cell-role="th">alisson</th>
+<th data-quarto-table-cell-role="th">georginio-wijnaldum</th>
+<th data-quarto-table-cell-role="th">roberto-firmino</th>
+<th data-quarto-table-cell-role="th">jordan-henderson</th>
+<th data-quarto-table-cell-role="th">sadio-mane</th>
+<th data-quarto-table-cell-role="th">joel-matip</th>
+<th data-quarto-table-cell-role="th">fabinho</th>
+<th data-quarto-table-cell-role="th">trent-alexander-arnold</th>
+<th data-quarto-table-cell-role="th">mohamed-salah</th>
+<th data-quarto-table-cell-role="th">strangers_count</th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">282</td>
+<td>4.0</td>
+<td>1.0</td>
+<td>4.0</td>
+<td>-1.0</td>
+<td>2.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>6</td>
+<td>2022-05-10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">283</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>-1.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>0.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>7</td>
+<td>2022-05-14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">284</td>
+<td>0.0</td>
+<td>2.0</td>
+<td>4.0</td>
+<td>-1.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>1.0</td>
+<td>4.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>3</td>
+<td>2022-05-17</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">285</td>
+<td>2.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>-1.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>0.0</td>
+<td>4.0</td>
+<td>3.0</td>
+<td>6</td>
+<td>2022-05-22</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">286</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>-1.0</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>2.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>4.0</td>
+<td>8</td>
+<td>2022-05-28</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
 <p>To address some of the ugliness from the <a href="#initial-visualisation">initial visualisation</a> we can make some changes in the visualisation setup (expand code and see comments):</p>
-<div class="cell page-columns page-full" data-execution_count="18">
-<details>
+<div id="cell-36" class="cell page-columns page-full" data-execution_count="18">
+<details class="code-fold">
 <summary>Visualisation setup</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a>availability_levels_map <span class="op">=</span> {</span>
 <span id="cb18-2"><a href="#cb18-2"></a>                        <span class="st">'Not at Liverpool'</span> : <span class="op">-</span><span class="dv">1</span>,</span>
@@ -902,102 +891,109 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <span id="cb18-36"><a href="#cb18-36"></a>_ <span class="op">=</span> ax2.tick_params(length<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb18-37"><a href="#cb18-37"></a>_ <span class="op">=</span> plt.gcf().text(<span class="fl">0.9</span>, <span class="dv">0</span>, <span class="st">"ismailmo.com"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontdict<span class="op">=</span>{<span class="st">'color'</span>:  <span class="st">'blue'</span>} )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display column-screen">
-<p><img src="avail-heatmaps_files/figure-html/cell-19-output-1.png" class="img-fluid"></p>
+<div class="cell-output cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="avail-heatmaps_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img column-screen"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>There are some anomalies where players are marked as “Not at liverpool” even though they definitely were (see Trent, Mane and salah’s red lines)</p>
 <p>Mane and Salah were playing eachother at the AFCON final - so technically the graph is correct :)</p>
-<div class="cell" data-execution_count="19">
+<div id="cell-39" class="cell" data-execution_count="19">
 <div class="cell-output cell-output-display" data-execution_count="19">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>sadio-mane</th>
-      <th>date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>258</th>
-      <td>-1.0</td>
-      <td>2022-02-06</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sadio-mane</th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">258</td>
+<td>-1.0</td>
+<td>2022-02-06</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
+<div id="cell-40" class="cell" data-execution_count="20">
 <div class="cell-output cell-output-display" data-execution_count="20">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>sadio-mane</th>
-      <th>date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>258</th>
-      <td>-1.0</td>
-      <td>2022-02-06</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sadio-mane</th>
+<th data-quarto-table-cell-role="th">date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">258</td>
+<td>-1.0</td>
+<td>2022-02-06</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
 <p>For Trent, the England U21 team were playing at the same time (which Trent used to play for) so our <a href="#more-data-processing">logic</a> that adjusted for games played for other clubs (e.g.&nbsp;Van Dijk for Southampton) picked up this game- since this is a rare edge case I’ll just overwrite it manually</p>
-<div class="cell" data-execution_count="21">
+<div id="cell-42" class="cell" data-execution_count="21">
 <div class="cell-output cell-output-display" data-execution_count="21">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>2018-05-26</th>
-      <th>2018-05-26</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>trent-alexander-arnold</th>
-      <td>4</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>Home team.1</th>
-      <td>Real Madrid</td>
-      <td>England U21</td>
-    </tr>
-    <tr>
-      <th>Away team.1</th>
-      <td>Liverpool</td>
-      <td>China U20</td>
-    </tr>
-    <tr>
-      <th>Result</th>
-      <td>3:1</td>
-      <td>2:1</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">2018-05-26</th>
+<th data-quarto-table-cell-role="th">2018-05-26</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">trent-alexander-arnold</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Home team.1</td>
+<td>Real Madrid</td>
+<td>England U21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Away team.1</td>
+<td>Liverpool</td>
+<td>China U20</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Result</td>
+<td>3:1</td>
+<td>2:1</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
-<details>
+<div id="cell-43" class="cell" data-execution_count="22">
+<details class="code-fold">
 <summary>Manually adjusting outlier for Trent</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a>trent_outlier <span class="op">=</span> all_avail[<span class="st">'date'</span>]<span class="op">==</span>datetime.datetime(<span class="dv">2018</span>,<span class="dv">5</span>,<span class="dv">26</span>)</span>
 <span id="cb19-2"><a href="#cb19-2"></a>all_avail.loc[trent_outlier,<span class="st">"trent-alexander-arnold"</span>] <span class="op">=</span> <span class="dv">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1005,15 +1001,15 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 </div>
 <p>The visualisation above shows that the full squad were only playing for Liverpool FC during 2018/19 - 2021-22 (see the blocks of red at the start and end of the heatmap) - we can remove the other seasons (we’ll keep a few rows to highlight their departure/arrival at Liverpool).</p>
 <p>Another key change is choosing a better colours palette - <a href="https://colorbrewer2.org/">ColorBrewer</a> is a great resource for finding accessible color schemes based on the research of <a href="http://www.personal.psu.edu/cab38/">Dr Cynthia Brewer</a></p>
-<div class="cell" data-execution_count="23">
-<details>
+<div id="cell-45" class="cell" data-execution_count="23">
+<details class="code-fold">
 <summary>Narrowing down the date range</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a>cl_19_lineup_at_lpool_avail_df <span class="op">=</span> all_avail[(all_avail.loc[:,<span class="st">'date'</span>]<span class="op">&gt;</span>datetime.datetime(<span class="dv">2018</span>,<span class="dv">5</span>,<span class="dv">10</span>)) <span class="op">&amp;</span>( all_avail.loc[:,<span class="st">'date'</span>]<span class="op">&lt;</span>datetime.datetime(<span class="dv">2021</span>,<span class="dv">8</span>,<span class="dv">30</span>))]</span>
 <span id="cb20-2"><a href="#cb20-2"></a>cl_19_lineup_at_lpool_avail_df.reset_index(inplace<span class="op">=</span><span class="va">True</span>, drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-execution_count="25">
-<details>
+<div id="cell-46" class="cell" data-execution_count="25">
+<details class="code-fold">
 <summary>Final visualisation setup</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># order players by position</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a>heatmap_data <span class="op">=</span> cl_19_lineup_at_lpool_avail_df.loc[:, [<span class="st">'mohamed-salah'</span>,</span>
@@ -1085,11 +1081,11 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <section id="final-visualisation" class="level1 page-columns page-full" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Final Visualisation</h1>
 <p>The final visualisation is complete, but to add some extra context I added annotations using <a href="excalidraw.com">Excalidraw</a> to highlight some key points (probably could’ve done this in code but I got lazy):</p>
-<div class="column-screen">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="annotated_heatmap_corrected.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Annotated heatmap</figcaption><p></p>
+<div class="page-columns page-full">
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="annotated_heatmap_corrected.png" class="img-fluid figure-img column-screen"></p>
+<figcaption>Annotated heatmap</figcaption>
 </figure>
 </div>
 </div>
@@ -1100,11 +1096,11 @@ gtag('config', 'G-6GL9ZFETVN', { 'anonymize_ip': true});
 <ul>
 <li>How does this compare with the current season?</li>
 </ul>
-<div class="column-screen">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="./comment-requests/season22-23.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">2022-23 season</figcaption><p></p>
+<div class="page-columns page-full">
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="./comment-requests/season22-23.png" class="img-fluid figure-img column-screen"></p>
+<figcaption>2022-23 season</figcaption>
 </figure>
 </div>
 </div>
@@ -1154,6 +1150,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         el.classList.add('notransition');
       }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
     }
   }
   const toggleColorMode = (alternate) => {
@@ -1222,13 +1245,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -1255,9 +1280,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -1293,10 +1332,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1306,8 +1344,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1322,6 +1369,238 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -1364,6 +1643,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/quarto-dev/quarto-demo/blob/main/posts/CL19-strangers/avail-heatmaps.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/quarto-dev/quarto-demo/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
@@ -1382,6 +1667,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>
   </div>
 </footer>
+
 
 
 

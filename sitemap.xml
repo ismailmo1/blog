@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/csharp-first-steps/index.html</loc>
-    <lastmod>2023-02-27T13:26:02.422Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/about.html</loc>
+    <lastmod>2024-02-04T11:51:13.962Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/async-streamlit/async_scraping.html</loc>
-    <lastmod>2023-02-27T13:26:04.966Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/pytest-sql/index.html</loc>
+    <lastmod>2024-02-04T11:51:14.002Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/worldcup-fatigue/index.html</loc>
-    <lastmod>2023-02-27T13:26:05.802Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/csharp-first-steps/index.html</loc>
+    <lastmod>2024-02-04T11:51:13.990Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/csharp-notebooks/index.html</loc>
-    <lastmod>2023-02-27T13:26:06.358Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/async-streamlit/async_scraping.html</loc>
+    <lastmod>2024-02-04T11:51:13.986Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/CL19-strangers/avail-heatmaps.html</loc>
-    <lastmod>2023-02-27T13:26:07.902Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/csharp-notebooks/index.html</loc>
+    <lastmod>2024-02-04T11:51:13.990Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/pytest-sql/index.html</loc>
-    <lastmod>2023-02-27T13:26:09.466Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/index.html</loc>
+    <lastmod>2024-02-04T11:51:13.962Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/lpool-shot-xg/index.html</loc>
-    <lastmod>2023-02-27T13:26:10.274Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/func-indexes/index.html</loc>
+    <lastmod>2024-02-04T11:51:13.998Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/posts/func-indexes/index.html</loc>
-    <lastmod>2023-02-27T13:26:10.946Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/lpool-shot-xg/index.html</loc>
+    <lastmod>2024-02-04T11:51:14.002Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/about.html</loc>
-    <lastmod>2023-02-27T13:26:11.326Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/worldcup-fatigue/index.html</loc>
+    <lastmod>2024-02-04T11:51:14.006Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ismailmo1/blog/index.html</loc>
-    <lastmod>2023-02-27T13:26:11.850Z</lastmod>
+    <loc>https://ismailmo1.github.io/blog/posts/CL19-strangers/avail-heatmaps.html</loc>
+    <lastmod>2024-02-04T11:51:13.982Z</lastmod>
   </url>
 </urlset>
