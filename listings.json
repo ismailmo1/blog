@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/llm-filter-exp-1/index.html",
       "/posts/peewee-array-byte-string/index.html",
       "/posts/func-indexes/index.html",
       "/posts/csharp-notebooks/index.html",

@@ -2,46 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ismailmo1.github.io/blog/about.html</loc>
-    <lastmod>2024-02-04T11:53:50.825Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.063Z</lastmod>
   </url>
   <url>
     <loc>https://ismailmo1.github.io/blog/posts/pytest-sql/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.865Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.111Z</lastmod>
   </url>
   <url>
     <loc>https://ismailmo1.github.io/blog/posts/csharp-first-steps/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.853Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ismailmo1.github.io/blog/posts/async-streamlit/async_scraping.html</loc>
-    <lastmod>2024-02-04T11:53:50.849Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ismailmo1.github.io/blog/posts/func-indexes/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.861Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ismailmo1.github.io/blog/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.825Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ismailmo1.github.io/blog/posts/csharp-notebooks/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.853Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ismailmo1.github.io/blog/posts/peewee-array-byte-string/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.865Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.088Z</lastmod>
   </url>
   <url>
     <loc>https://ismailmo1.github.io/blog/posts/lpool-shot-xg/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.865Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.110Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/posts/func-indexes/index.html</loc>
+    <lastmod>2024-09-19T08:55:02.097Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/posts/llm-filter-exp-1/index.html</loc>
+    <lastmod>2024-09-19T08:55:02.110Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/index.html</loc>
+    <lastmod>2024-09-19T08:55:02.063Z</lastmod>
   </url>
   <url>
     <loc>https://ismailmo1.github.io/blog/posts/worldcup-fatigue/index.html</loc>
-    <lastmod>2024-02-04T11:53:50.869Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.115Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/posts/async-streamlit/async_scraping.html</loc>
+    <lastmod>2024-09-19T08:55:02.085Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/posts/csharp-notebooks/index.html</loc>
+    <lastmod>2024-09-19T08:55:02.088Z</lastmod>
   </url>
   <url>
     <loc>https://ismailmo1.github.io/blog/posts/CL19-strangers/avail-heatmaps.html</loc>
-    <lastmod>2024-02-04T11:53:50.845Z</lastmod>
+    <lastmod>2024-09-19T08:55:02.082Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ismailmo1.github.io/blog/posts/peewee-array-byte-string/index.html</loc>
+    <lastmod>2024-09-19T08:55:02.110Z</lastmod>
   </url>
 </urlset>
